@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lafa"
+version = "0.1.0"
+description = "Native PyTorch Langevin algorithms and uncertainty quantification"
+requires-python = ">=3.11"
+dependencies = ["torch>=2.6"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+notebooks = ["jupyter>=1", "matplotlib>=3.8", "numpy>=1.26"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
