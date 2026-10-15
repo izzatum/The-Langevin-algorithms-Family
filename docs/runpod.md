@@ -7,16 +7,23 @@ API credential to a worker. The current readiness work has **not run a GPU job**
 
 ## Authentication prerequisite
 
-`RUNPOD_API_KEY` is a proxy-backed environment binding. Its allowed destinations
-must include **`rest.runpod.io`** for management and **`api.runpod.ai`** for job
-submission, health and results. `api.runpod.io` is a different hostname and does
-not enable `api.runpod.ai`. Add the latter to the existing binding in secure
-cloud environment settings, preserve the existing destinations, and save.
+`api.runpod.io` is valid: it serves GraphQL and the newer REST v2 management API.
+Serverless job submission, endpoint health and results use **`api.runpod.ai`**,
+as documented in RunPod's [operation reference](https://docs.runpod.io/serverless/endpoints/operation-reference).
+This controller uses **`rest.runpod.io`** for management. The proxy-backed
+`RUNPOD_API_KEY` binding must permit both controller destinations. Keep the
+existing `.io` destinations and add `api.runpod.ai` in secure cloud environment
+settings, then save.
 Do not paste a key into chat, source files, templates or shell command arguments.
 
-The latest management-only lifecycle check created and removed an idle task
-endpoint/template without submitting a job. The `.ai` health route returned
-`401 invalid api key` under the current destination binding. No GPU was allocated.
+The 2026-10-15 live check authenticated successfully at `.io/graphql` and
+`.io/v2/serverless/{id}`. For that same endpoint, `.io/v2/{id}/health` returned
+404; `.ai/v2/{id}/health` returned `401 invalid api key` with the current binding.
+The [REST v2 schema](https://api.runpod.io/v2/openapi.json) lists resource management
+operations; its general `/v2/health` response does not validate a GPU job route.
+The test endpoint and template were deleted. No job was submitted, but RunPod
+reported an idle A4000 worker: **minimum 0 workers does not guarantee that setup
+avoids GPU allocation or charges**. Billing reported $0 at cleanup and may lag.
 
 ## Set up an idle endpoint
 
@@ -24,17 +31,21 @@ Choose a persistent workspace directory outside the source checkout. Use a new
 ownership receipt for each attempt, but **reuse the same budget ledger**.
 
 ```bash
-python scripts/runpod_validate.py setup --state /workspace/lafa-runpod/ownership-01.json
+python scripts/runpod_validate.py setup \
+  --state /workspace/lafa-runpod/ownership-01.json \
+  --ledger /workspace/lafa-runpod/budget.json
 python scripts/runpod_validate.py health --state /workspace/lafa-runpod/ownership-01.json
 ```
 
-`setup` performs management requests only: a private pinned-image template,
+`setup` can incur charges even before a job. It performs management requests:
+a private pinned-image template,
 20 GB container disk, no persistent volume, and an endpoint with minimum 0 /
-maximum 1 worker. It submits no job. Returned settings are checked. Creation
+maximum 1 worker. It reserves budget and schedules cleanup before creation;
+it submits no job. Returned settings are checked. Creation
 POSTs are never retried; unique names and a durable receipt support reconciliation
 if a response is lost. Existing receipts are preserved rather than overwritten.
 `health` is read-only. Authentication to `api.runpod.ai`, zero queued/running or
-historical work, and verified storage limits are required before a billable run.
+historical work, and verified storage limits are required before job submission.
 
 ## Prepare and review without allocating a GPU
 
@@ -102,19 +113,27 @@ An oversized result fails explicitly and returns a failure metadata summary.
 ## Time and budget bounds
 
 - Exactly one A4000 GPU; minimum 0 / maximum 1 worker; no network volume.
+- Endpoint setup reserves $1 in the same ledger used for job execution, because
+  worker initialization can start without a submitted job. Setup also starts a
+  detached 30-minute cleanup watchdog; its deadline includes preparation time.
 - Provider execution timeout 900 seconds; per-job absolute TTL 1200 seconds, including
   queueing and retries; idle timeout 5 seconds. No automatic job resubmission.
 - Worker deadline 840 seconds leaves packaging time; bootstrap wall timer 25 minutes.
-- A detached local controller watchdog attempts cleanup at 30 minutes. Provider
+- Job execution arms another cleanup watchdog using the same absolute setup
+  deadline; it does not extend the resource lifetime. Provider
   TTL and scale-to-zero remain necessary because a local watchdog cannot survive
   loss of the cloud machine.
+- Prepare the source payload promptly: job submission requires enough time before
+  that setup deadline for the full job TTL and cleanup margin. Expired or old
+  setup receipts must be cleaned up before a newly budgeted attempt.
 - Advertised Serverless AMPERE_16 flex price is $0.58/hour. The conservative configured
   ceiling is $0.70/hour. The 20 GB ephemeral container disk is included in Serverless
   running cost; the estimate retains an additional small allowance. This is not the
   much cheaper Community Pod rate.
 - A 20-minute lifetime plus 10-minute reserve is estimated below $0.36. The persistent
   ledger reserves that estimate **plus $1**, rounded upward (normally $1.36).
-  Every attempt reserves at least $1, cannot exceed the default $3 per-run budget,
+  Setup and job reservations are separate; every reservation is at least $1,
+  cannot exceed the default $3 per-stage budget,
   and all reservations together cannot exceed the authorized **$10 total**.
   Reservations are not automatically refunded. Keep the same ledger across runs;
   manual invoice reconciliation must account for earlier charges before editing it.

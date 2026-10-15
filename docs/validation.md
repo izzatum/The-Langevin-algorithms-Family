@@ -17,7 +17,7 @@ The setup script was executed successfully and `pip check` passed. The package b
 
 ## Evidence included in the repository
 
-Final local suite: **302 passed, 73 skipped, 0 failed** in 14.07 seconds. All 73 skips require unavailable CUDA. The [JUnit artifact](../benchmarks/results/cpu/pytest.xml) records 375 collected cases. All six notebooks reran successfully after the numerical fixes, with 28 executed code cells and no error outputs (61.74 seconds total).
+Final local suite: **314 passed, 73 skipped, 0 failed** in 14.52 seconds, including 44 offline RunPod helper cases. All 73 skips require unavailable CUDA. The [JUnit artifact](../benchmarks/results/cpu/pytest.xml) records 387 collected cases. The actual detached cleanup watchdog also acknowledged its ownership snapshot in a local subprocess check, then was terminated before any API call. All six notebooks reran successfully after the numerical fixes, with 28 executed code cells and no error outputs (61.74 seconds total).
 
 | Artifact | Actual scope |
 |---|---|
@@ -49,8 +49,8 @@ The first functional ULA call, including compiler/cache initialization, took abo
 
 ## GPU and research gates
 
-**No real CUDA execution has been completed.** The [RunPod controller](runpod.md) prepares a source payload and runs the tests and six notebooks with explicit CUDA, saves artifacts, and applies worker/time/budget bounds. Its helper tests run locally without allocating a GPU. The authorized total budget is **$10**. No GPU job has been submitted and task GPU spend is **$0**.
+**No real CUDA execution has been completed.** The [RunPod controller](runpod.md) prepares a source payload and runs the tests and six notebooks with explicit CUDA, saves artifacts, and applies worker/time/budget bounds. Its helper tests run locally without allocating a GPU. The authorized total budget is **$10**. No GPU job has been submitted. A management-only check observed an idle A4000 worker despite minimum 0 workers; all task resources were removed. Billing returned $0 at cleanup on 2026-10-15, but reporting may lag. Five historical endpoint setup attempts now carry $5 of conservative ledger reservations; this is reserved budget, not invoiced spend.
 
-The secure key currently permits `rest.runpod.io` and `api.runpod.io`; the Serverless job API needs **`api.runpod.ai`** added to that same binding. Authenticated management access does not validate CUDA. Add the exact `.ai` destination in environment settings before running the prepared workflow. CPU outputs and skipped CUDA cases are never reported as GPU results.
+The secure key currently permits `rest.runpod.io` and `api.runpod.io`. The latter is a valid management API and authenticated successfully; its endpoint job health path returned 404. RunPod documents the Serverless job API at **`api.runpod.ai`**, which returned 401 and needs adding to that same binding. Authenticated management access does not validate CUDA. Keep the `.io` destinations when adding `.ai` in environment settings. CPU outputs and skipped CUDA cases are never reported as GPU results.
 
 Broader tail/calibration studies, full-grid nonlinear posterior comparisons, nonlinear-observation SA-LEnKF, larger neural-network experiments, distributed/fused implementations and the Exa errata/author-code survey remain extensions or outstanding review. Published asymptotic assumptions do not disappear when an implementation passes its unit tests.
