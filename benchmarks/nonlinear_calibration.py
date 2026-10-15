@@ -180,11 +180,13 @@ def figures(data, output):
         mean = torch.tensor(first['reference']['field_mean']).reshape(n, n)
         sd = torch.tensor(first['reference']['field_sd']).reshape(n, n)
         covered = torch.tensor(first['reference']['field_covered']).reshape(n, n)
-        for ax, field, title in zip(row, [truth, mean, sd, covered], ['Prior-drawn truth', 'Reference posterior mean', 'Reference posterior SD', 'Truth inside marginal 95% interval']):
+        for ax, field, title in zip(row, [truth, mean, sd, covered], ['Prior-drawn truth', 'Reference posterior mean', 'Reference posterior SD', 'Marginal 95% coverage']):
             options = dict(vmin=min(float(truth.min()), float(mean.min())), vmax=max(float(truth.max()), float(mean.max()))) if title in ('Prior-drawn truth', 'Reference posterior mean') else {}
+            if title == 'Marginal 95% coverage':
+                options = dict(vmin=0., vmax=1.)
             im = ax.imshow(field, origin='lower', **options)
             ax.set_title(f'{n}×{n}: {title}', fontsize=10)
-            fig.colorbar(im, ax=ax)
+            fig.colorbar(im, ax=ax, ticks=[0, 1] if title == 'Marginal 95% coverage' else None)
     fig.savefig(output/'nonlinear-fields.png', dpi=150)
     plt.close(fig)
     fig, axes = plt.subplots(3, len(data['grids']), figsize=(6*len(data['grids']), 11), squeeze=False, constrained_layout=True)
