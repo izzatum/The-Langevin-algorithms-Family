@@ -68,7 +68,7 @@ class NoiseAnnealedLangevin(OwnedState):
         sigma=self.sigmas[self.stage]
         alpha=self.step_size*(sigma/self.sigmas[-1])**2
         with torch.no_grad():
-            score=checked(self.score(self._position,sigma),self._position,'score')
+            score=checked(self.score(self._position.clone(),sigma),self._position,'score')
         result=self._finish(self._position+alpha/2*score+math.sqrt(alpha)*noise_like(self._position,self.generator,noise),sigma=sigma,alpha=alpha,stage=self.stage)
         self.stage_iteration+=1
         if self.stage_iteration==self.steps_per_sigma:

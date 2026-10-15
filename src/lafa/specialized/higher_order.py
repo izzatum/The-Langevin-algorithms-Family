@@ -30,8 +30,8 @@ class AnchoredLangevin(OwnedState):
 
     def _reference(self, x):
         with torch.no_grad():
-            u = self.potential(x)
-        checked(u, x, 'potential', x.shape[:-1])
+            u = self.potential(x.detach().clone())
+        u = checked(u, x, 'potential', x.shape[:-1])
         v,g = value_and_grad(self.reference_potential, x)
         checked(v, x, 'reference potential', x.shape[:-1])
         checked(g, x, 'reference gradient')
@@ -80,16 +80,19 @@ class HOLA(OwnedState):
     def _derivatives(self, x):
         if self.derivatives is not None:
             provider = self.derivatives
-            g = checked(provider.gradient(x), x, 'gradient')
-            lap = checked(provider.grad_laplacian(x), x, 'gradient of Laplacian')
-            norm = torch.as_tensor(provider.spectral_norm(x),device=x.device,dtype=x.dtype)
+            g = checked(provider.gradient(x.detach().clone()), x, 'gradient')
+            lap = checked(provider.grad_laplacian(x.detach().clone()), x, 'gradient of Laplacian')
+            norm = torch.as_tensor(provider.spectral_norm(x.detach().clone()),device=x.device,dtype=x.dtype).detach().clone()
             if norm.ndim or not torch.isfinite(norm) or norm < 0:
                 raise ValueError('exact spectral norm must be a finite nonnegative scalar')
-            return g, lambda v: checked(provider.hvp(x,v), x, 'Hessian-vector product'), norm, lap
+            return g, lambda v: checked(provider.hvp(x.detach().clone(),v.detach().clone()), x, 'Hessian-vector product'), norm, lap
         with torch.enable_grad():
             # torch.func handles constant derivatives (linear/quadratic U).
-            gradient = torch.func.grad(self.potential)
-            hessian = torch.func.hessian(self.potential)
+            # Preserve the graph through the copy for second/third derivatives.
+            # Every transformed evaluation owns its callback input.
+            potential = lambda z: self.potential(z.clone())
+            gradient = torch.func.grad(potential)
+            hessian = torch.func.hessian(potential)
             g = gradient(x).detach()
             H = hessian(x).detach()
             lap = torch.func.grad(lambda z: hessian(z).diagonal().sum())(x).detach()
