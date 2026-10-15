@@ -6,7 +6,9 @@ MALA returns the accepted-state potential. ULA returns its optional closure valu
 No module buffers or external RNGs are checkpointed: freeze stochastic/mutable
 model behavior yourself. Parameter groups use lr as diagonal covariance scaling;
 MALA accepts/rejects the full concatenated vector together. Parameter groups
-are fixed at construction; add_param_group afterward is unsupported.
+are fixed at construction; add_param_group afterward is unsupported. Failed steps
+restore parameters, gradients, numerical sampler history, last_result and this
+optimizer's generator. Mutable closure state and external RNGs are caller-owned.
 """
 import copy
 import math
@@ -71,13 +73,18 @@ class ULA(torch.optim.Optimizer):
         return torch.cat([p.detach().reshape(-1) for p in self._parameters()])
 
     def _scales(self):
-        pieces=[]
-        for group in self.param_groups:
-            h=float(group['lr'])
-            if not math.isfinite(h) or h <= 0:
-                raise ValueError('group lr must be finite and positive')
-            pieces.extend(torch.full_like(p,h).reshape(-1) for p in group['params'])
-        return torch.cat(pieces)
+        rates = tuple(float(group['lr']) for group in self.param_groups)
+        if any(not math.isfinite(rate) or rate <= 0 for rate in rates):
+            raise ValueError('group lr must be finite and positive')
+        # Read group rates every time; cached buffers never contain gradients.
+        signature = tuple((id(p), p.shape, p.dtype, p.device) for p in self._parameters())
+        key = (rates, signature)
+        if getattr(self, '_scale_key', None) != key:
+            pieces = [torch.full_like(p, rate).reshape(-1)
+                      for group, rate in zip(self.param_groups, rates) for p in group['params']]
+            self._scale_buffer = torch.cat(pieces)
+            self._scale_key = key
+        return self._scale_buffer
 
     def _grads(self):
         pieces=[]
@@ -98,11 +105,39 @@ class ULA(torch.optim.Optimizer):
             offset+=size
 
     def step(self,closure=None):
+        # Sampler tensors are replaced, never mutated in-place by transitions.
+        # A shallow state snapshot therefore supports transactional recovery
+        # without cloning all numerical history on every successful step.
+        initial = self._flat()
+        previous_grads = [None if p.grad is None else p.grad.detach().clone() for p in self._parameters()]
+        rng = self.generator.get_state()
+        previous_sampler = self._sampler
+        sampler_state = None if previous_sampler is None else previous_sampler.__dict__.copy()
+        pending = self._pending_sampler_state
+        previous_result = self.last_result
+        try:
+            return self._step(closure, initial)
+        except Exception:
+            self._assign(initial)
+            for p, gradient in zip(self._parameters(), previous_grads):
+                p.grad = gradient
+            self.generator.set_state(rng)
+            self._sampler = previous_sampler
+            if previous_sampler is not None:
+                previous_sampler.__dict__.clear()
+                previous_sampler.__dict__.update(sampler_state)
+            self._pending_sampler_state = pending
+            self.last_result = previous_result
+            self._sampler_scale_buffer = None
+            raise
+
+    def _step(self,closure,initial):
         if self.sampler_cls is None:
             value=None
             if closure is not None:
                 with torch.enable_grad(): value=closure()
-            x,g=self._flat(),self._grads()
+            # A closure may deliberately update parameter values.
+            x,g=(self._flat() if closure is not None else initial),self._grads()
             if not torch.isfinite(g).all(): raise ValueError('gradients must be finite')
             z=torch.randn(x.shape,device=x.device,dtype=x.dtype,generator=self.generator)
             y=ula_step(x,g,self._scales(),temperature=self.temperature,noise=z)
@@ -111,8 +146,7 @@ class ULA(torch.optim.Optimizer):
             return value
         if closure is None:
             raise ValueError(f'{type(self).__name__} requires a repeatable potential-and-backward closure')
-        initial=self._flat()
-        old_grads=[None if p.grad is None else p.grad.detach().clone() for p in self._parameters()]
+        initial=self._flat()  # read external parameter changes on every call
         optimizer=self
         class ClosureTarget:
             def value_and_grad(self,x):
@@ -122,42 +156,40 @@ class ULA(torch.optim.Optimizer):
                     raise ValueError('closure must return a scalar tensor potential')
                 return value.detach(),optimizer._grads()
         target=ClosureTarget()
-        try:
-            scales=self._scales()
-            if self._sampler is None:
-                # Separate a common h from block mobility; Lip adapts this common h.
-                h=float(self.param_groups[0]['lr'])
-                kwargs=dict(self.sampler_kwargs)
-                if issubclass(self.sampler_cls,samplers.BAOAB):
-                    if not torch.equal(scales,torch.full_like(scales,h)):
-                        raise ValueError('BAOAB optimizer requires equal group lr')
-                else:
-                    kwargs['mobility']=scales/h
-                self._sampler=self.sampler_cls(target,initial,step_size=h,temperature=self.temperature,
-                                               generator=self.generator,**kwargs)
-                if self._pending_sampler_state is not None:
-                    self._sampler.load_state_dict(self._pending_sampler_state)
-                    self._pending_sampler_state=None
-            else:
-                self._sampler.potential_fn=target
-                self._sampler._position=initial.clone()
-                self._sampler.invalidate_cache()
-                h=float(self.param_groups[0]['lr'])
-                if isinstance(self._sampler,samplers.BAOAB):
-                    if not torch.equal(scales,torch.full_like(scales,h)):
-                        raise ValueError('BAOAB optimizer requires equal group lr')
-                    self._sampler.step_size.fill_(h)
-                else:
-                    self._sampler.mobility=scales/h
-                    if not isinstance(self._sampler,(samplers.LipULA,samplers.LipMALA)):
-                        self._sampler.step_size.fill_(h)
-            self.last_result=self._sampler.step()
-            self._assign(self.last_result.position,self.last_result.gradient)
-            return self.last_result.potential.clone()
-        except Exception:
-            self._assign(initial)
-            for p,g in zip(self._parameters(),old_grads): p.grad=g
-            raise
+        scales=self._scales()
+        h=float(self.param_groups[0]['lr'])
+        kinetic=issubclass(self.sampler_cls,samplers.BAOAB)
+        if kinetic and any(float(group['lr']) != h for group in self.param_groups):
+            raise ValueError('BAOAB optimizer requires equal group lr')
+        if self._sampler is None:
+            # Separate a common h from block mobility; Lip adapts this common h.
+            kwargs=dict(self.sampler_kwargs)
+            if not kinetic:
+                kwargs['mobility']=scales/h
+            self._sampler=self.sampler_cls(target,initial,step_size=h,temperature=self.temperature,
+                                           generator=self.generator,**kwargs)
+            if self._pending_sampler_state is not None:
+                # Restore history/RNG while retaining freshly evaluated external
+                # parameters. A pending checkpoint must not overwrite edits made
+                # after load_state_dict and before the first resumed step.
+                value,gradient=self._sampler._value,self._sampler._gradient
+                self._sampler.load_state_dict(self._pending_sampler_state)
+                self._sampler._position=initial
+                self._sampler._value,self._sampler._gradient=value,gradient
+                self._pending_sampler_state=None
+        else:
+            self._sampler.potential_fn=target
+            self._sampler._position=initial
+            self._sampler.invalidate_cache()
+        if getattr(self, '_sampler_scale_buffer', None) is not scales:
+            if not kinetic:
+                self._sampler.mobility=scales/h
+            if not isinstance(self._sampler,(samplers.LipULA,samplers.LipMALA)):
+                self._sampler.step_size=torch.full_like(self._sampler.step_size,h)
+        self._sampler_scale_buffer=scales
+        self.last_result=self._sampler.step()
+        self._assign(self.last_result.position,self.last_result.gradient)
+        return self.last_result.potential.clone()
 
     def state_dict(self):
         result=copy.deepcopy(super().state_dict())
@@ -181,6 +213,7 @@ class ULA(torch.optim.Optimizer):
         self._sampler=None
         self._pending_sampler_state=own['sampler']
         self.last_result=None
+        self._sampler_scale_buffer=None
 
 
 class MALA(ULA):
