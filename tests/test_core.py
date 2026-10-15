@@ -231,3 +231,44 @@ def test_nonfinite_coordinates_rejected_before_target_evaluation(name,mixed):
         assert torch.equal(s.step_size[bad],before['step_size'][bad])
         assert torch.equal(s._alpha[bad],before['_alpha'][bad])
     assert torch.isneginf(r.stats['log_acceptance'][bad]).all()
+
+
+@pytest.mark.parametrize('device',DEVICES)
+def test_module_potential_rejects_distinct_parameters_sharing_storage(device):
+    from lafa.targets import ModulePotential
+    class AliasedModule(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.p=torch.nn.Parameter(torch.ones(1,dtype=DT,device=device))
+            self.q=torch.nn.Parameter(self.p.detach())
+        def forward(self):
+            return self.p-self.q
+    model=AliasedModule()
+    assert torch.equal(model(),torch.zeros(1,dtype=DT,device=device))
+    with pytest.raises(ValueError,match='aliased parameter storage'):
+        ModulePotential(model,lambda output:output.square().sum())
+    assert model.p is not model.q
+    assert torch.equal(model.p,torch.ones_like(model.p))
+
+
+@pytest.mark.parametrize('device',DEVICES)
+def test_module_potential_preserves_same_object_tied_parameters(device):
+    from lafa.targets import ModulePotential, value_and_grad
+    class TiedModule(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.p=torch.nn.Parameter(torch.ones(1,dtype=DT,device=device))
+            self.q=self.p
+        def forward(self):
+            return self.p+self.q
+    model=TiedModule()
+    target=ModulePotential(model,lambda output:output.square().sum()/2)
+    assert target.numel==1 and len(target.parameter_spec)==1
+    torch.testing.assert_close(target.flatten_parameters(),torch.ones(1,dtype=DT,device=device))
+    x=torch.tensor([3.],dtype=DT,device=device)
+    value,gradient=value_and_grad(target,x)
+    torch.testing.assert_close(value,torch.tensor(18.,dtype=DT,device=device))
+    torch.testing.assert_close(gradient,torch.tensor([12.],dtype=DT,device=device))
+    assert model.p is model.q
+    torch.testing.assert_close(model(),torch.tensor([2.],dtype=DT,device=device))
+    assert model.p.grad is None

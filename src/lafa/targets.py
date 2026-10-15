@@ -77,13 +77,23 @@ class ModulePotential:
     cloned for each call, so model buffer mutation cannot leak between calls.
     The caller must use deterministic model evaluation (e.g. model.eval()).
     Module parameters are never overwritten. Batched vectors are not supported.
+    Same-object tied parameters retain their tie. Distinct parameters sharing
+    storage are rejected because an unconstrained flat vector loses that alias.
     """
     def __init__(self, module, loss, *, args=(), kwargs=None):
         self.module, self.loss, self.args = module, loss, args
         self.kwargs = {} if kwargs is None else dict(kwargs)
         self.parameter_spec = []
         offset = 0
+        seen_storage = set()
+        # named_parameters removes duplicate objects, preserving ordinary tied
+        # weights. Distinct objects backed by one storage need an unsupported
+        # constraint and cannot become independent flat coordinates.
         for name, p in module.named_parameters():
+            storage = (p.device, p.untyped_storage().data_ptr())
+            if storage in seen_storage:
+                raise ValueError('distinct module parameters with aliased parameter storage are unsupported')
+            seen_storage.add(storage)
             self.parameter_spec.append(ParameterSpec(name, p.shape, offset, offset+p.numel()))
             offset += p.numel()
         if not offset:

@@ -1,42 +1,45 @@
 import pytest
 import torch
-from test_core import DT
+from test_core import DT, DEVICES
 
 
-def test_optimizer_ula_group_covariance_and_return():
+@pytest.mark.parametrize('device',DEVICES)
+def test_optimizer_ula_group_covariance_and_return(device):
     import lafa
-    a=torch.nn.Parameter(torch.tensor([1.],dtype=DT)); b=torch.nn.Parameter(torch.tensor([2.],dtype=DT))
+    a=torch.nn.Parameter(torch.tensor([1.],dtype=DT,device=device)); b=torch.nn.Parameter(torch.tensor([2.],dtype=DT,device=device))
     seed=22
-    opt=lafa.ULA([{'params':[a],'lr':.1},{'params':[b],'lr':.3}], generator=torch.Generator().manual_seed(seed))
+    opt=lafa.ULA([{'params':[a],'lr':.1},{'params':[b],'lr':.3}], generator=torch.Generator(device=device).manual_seed(seed))
     def closure():
         opt.zero_grad(); loss=(a.square()+b.square()).sum()/2; loss.backward(); return loss
-    noise=torch.randn(2,dtype=DT,generator=torch.Generator().manual_seed(seed))
-    before=torch.tensor([1.,2.],dtype=DT); h=torch.tensor([.1,.3],dtype=DT)
+    noise=torch.randn(2,dtype=DT,device=device,generator=torch.Generator(device=device).manual_seed(seed))
+    before=torch.tensor([1.,2.],dtype=DT,device=device); h=torch.tensor([.1,.3],dtype=DT,device=device)
     value=opt.step(closure)
     torch.testing.assert_close(torch.cat([a,b]), before-h*before+(2*h).sqrt()*noise)
-    torch.testing.assert_close(value,torch.tensor(2.5,dtype=DT))
+    torch.testing.assert_close(value,torch.tensor(2.5,dtype=DT,device=device))
 
 
-def test_optimizer_mala_joint_rollback_and_checkpoint():
+@pytest.mark.parametrize('device',DEVICES)
+def test_optimizer_mala_joint_rollback_and_checkpoint(device):
     import lafa
-    a=torch.nn.Parameter(torch.tensor([1.],dtype=DT)); b=torch.nn.Parameter(torch.tensor([2.],dtype=DT))
-    opt=lafa.MALA([{'params':[a],'lr':20.},{'params':[b],'lr':30.}],generator=torch.Generator().manual_seed(3))
+    a=torch.nn.Parameter(torch.tensor([1.],dtype=DT,device=device)); b=torch.nn.Parameter(torch.tensor([2.],dtype=DT,device=device))
+    opt=lafa.MALA([{'params':[a],'lr':20.},{'params':[b],'lr':30.}],generator=torch.Generator(device=device).manual_seed(3))
     def closure():
         opt.zero_grad(); loss=(a.square()+b.square()).sum()/2; loss.backward(); return loss
     value=opt.step(closure)
-    torch.testing.assert_close(torch.cat([a,b]), torch.tensor([1.,2.],dtype=DT))
-    torch.testing.assert_close(torch.cat([a.grad,b.grad]),torch.tensor([1.,2.],dtype=DT))
-    torch.testing.assert_close(value,torch.tensor(2.5,dtype=DT))
+    torch.testing.assert_close(torch.cat([a,b]), torch.tensor([1.,2.],dtype=DT,device=device))
+    torch.testing.assert_close(torch.cat([a.grad,b.grad]),torch.tensor([1.,2.],dtype=DT,device=device))
+    torch.testing.assert_close(value,torch.tensor(2.5,dtype=DT,device=device))
     saved=opt.state_dict()
     opt.step(closure); expected=torch.cat([a,b]).detach().clone()
     opt.load_state_dict(saved); opt.step(closure)
     assert torch.equal(expected,torch.cat([a,b]))
 
 @pytest.mark.parametrize('name',['LipULA','LipMALA','BAOAB'])
-def test_adapters_closure_step(name):
+@pytest.mark.parametrize('device',DEVICES)
+def test_adapters_closure_step(name,device):
     import lafa
-    p=torch.nn.Parameter(torch.ones(2,dtype=DT))
-    opt=getattr(lafa,name)([p],lr=.05,generator=torch.Generator().manual_seed(1))
+    p=torch.nn.Parameter(torch.ones(2,dtype=DT,device=device))
+    opt=getattr(lafa,name)([p],lr=.05,generator=torch.Generator(device=device).manual_seed(1))
     def closure():
         opt.zero_grad(); value=p.square().sum()/2;value.backward();return value
     assert opt.step(closure).ndim==0
@@ -55,15 +58,18 @@ def test_optimizer_rejects_aliases_sparse_and_missing_grads():
     with pytest.raises(ValueError): opt.step()
 
 
-def test_optimizer_mala_matches_native_joint_groups():
+@pytest.mark.parametrize('device',DEVICES)
+def test_optimizer_mala_matches_native_joint_groups(device):
     import lafa
     from lafa.samplers import MALA
-    a=torch.nn.Parameter(torch.tensor([1.,-1.],dtype=DT)); b=torch.nn.Parameter(torch.tensor([2.],dtype=DT))
-    opt=lafa.MALA([{'params':[a],'lr':.15},{'params':[b],'lr':.45}],generator=torch.Generator().manual_seed(123))
-    native=MALA(lambda x:x.square().sum()/2,torch.tensor([1.,-1.,2.],dtype=DT),step_size=.15,
-                mobility=torch.tensor([1.,1.,3.],dtype=DT),generator=torch.Generator().manual_seed(123))
+    a=torch.nn.Parameter(torch.tensor([1.,-1.],dtype=DT,device=device)); b=torch.nn.Parameter(torch.tensor([2.],dtype=DT,device=device))
+    opt=lafa.MALA([{'params':[a],'lr':.15},{'params':[b],'lr':.45}],generator=torch.Generator(device=device).manual_seed(123))
+    def potential(x):
+        return x.square().sum()/2
+    native=MALA(potential,torch.tensor([1.,-1.,2.],dtype=DT,device=device),step_size=.15,
+                mobility=torch.tensor([1.,1.,3.],dtype=DT,device=device),generator=torch.Generator(device=device).manual_seed(123))
     def closure():
-        opt.zero_grad(); v=(a.square().sum()+b.square().sum())/2; v.backward(); return v
+        opt.zero_grad(); v=potential(torch.cat([a,b])); v.backward(); return v
     for _ in range(10):
         v=opt.step(closure); r=native.step()
         torch.testing.assert_close(torch.cat([a,b]),r.position,rtol=0,atol=0)
@@ -72,23 +78,30 @@ def test_optimizer_mala_matches_native_joint_groups():
 
 
 @pytest.mark.parametrize('name',['ULA','MALA','LipULA','LipMALA','BAOAB'])
-def test_optimizer_checkpoint_new_instance(name):
+@pytest.mark.parametrize('device',DEVICES)
+def test_optimizer_checkpoint_new_instance(name,device):
     import lafa
-    p=torch.nn.Parameter(torch.ones(2,dtype=DT))
-    opt=getattr(lafa,name)([p],lr=.1,generator=torch.Generator().manual_seed(52))
+    p=torch.nn.Parameter(torch.ones(2,dtype=DT,device=device))
+    opt=getattr(lafa,name)([p],lr=.1,generator=torch.Generator(device=device).manual_seed(52))
     def closure():
         opt.zero_grad(); v=p.square().sum()/2; v.backward(); return v
     for _ in range(3): opt.step(closure)
     saved=opt.state_dict()
-    for _ in range(5): opt.step(closure)
-    expected=p.detach().clone()
-    q=torch.nn.Parameter(torch.zeros(2,dtype=DT))
-    other=getattr(lafa,name)([q],lr=.05)
+    expected=[]
+    for _ in range(5):
+        value=opt.step(closure)
+        expected.append((p.detach().clone(),p.grad.detach().clone(),value.detach().clone()))
+    q=torch.nn.Parameter(torch.zeros(2,dtype=DT,device=device))
+    other=getattr(lafa,name)([q],lr=.05,generator=torch.Generator(device=device).manual_seed(999))
     other.load_state_dict(saved)
     def other_closure():
         other.zero_grad(); v=q.square().sum()/2; v.backward(); return v
-    for _ in range(5): other.step(other_closure)
-    assert torch.equal(q,expected)
+    for position,gradient,value in expected:
+        resumed_value=other.step(other_closure)
+        assert q.device.type==device and q.dtype==DT
+        assert torch.equal(q,position)
+        assert torch.equal(q.grad,gradient)
+        assert torch.equal(resumed_value,value)
 
 
 @pytest.mark.parametrize('name',['ULA','MALA','LipULA','LipMALA','BAOAB'])
