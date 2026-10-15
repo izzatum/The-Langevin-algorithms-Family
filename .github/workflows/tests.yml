@@ -21,6 +21,13 @@ jobs:
       - run: python -m pip install -e '.[test,notebooks]' build
       - run: python -m pytest -q --junitxml=test-results.xml
       - run: python -m build
+      - name: Verify tests from the source distribution
+        if: matrix.python-version == '3.12'
+        run: |
+          mkdir -p "$RUNNER_TEMP/lafa-sdist"
+          tar -xzf dist/*.tar.gz -C "$RUNNER_TEMP/lafa-sdist"
+          cd "$RUNNER_TEMP"/lafa-sdist/lafa-*
+          python -m pytest -q
       - name: Execute tutorials
         if: matrix.python-version == '3.12'
         run: python scripts/execute_notebooks.py --device cpu --output /tmp/lafa-notebooks
