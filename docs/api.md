@@ -14,6 +14,85 @@ Tensor samplers return `StepResult(position, potential, gradient, accepted, stat
 
 `state_dict()` / `load_state_dict()` preserve numerical state, schedules/adaptation, owned generator state and configuration. Reconstruct callbacks and the same target before loading. Checkpoints are separate from traces; filtering checkpoints currently occur between observation stages. Saving checkpoints with `torch.save` is supported; load your own trusted tensor checkpoints with `torch.load(..., weights_only=True)`. Checkpoints do not serialize executable target/model definitions.
 
+## Selective stepping and compiled targets
+
+Native samplers keep the full owned `StepResult` default. Select only the outputs
+needed by a loop, or advance without allocating result snapshots:
+
+```python
+chain.advance(100)  # 100 transitions, no retained trajectory or result snapshots
+selected = chain.step(fields=('position', 'accepted'))
+chain.step(fields=())  # one transition, returns None
+```
+
+Selected fields return an owned dictionary. Available names are `position`,
+`potential`, `gradient`, `accepted`, and `stats`; requesting no fields changes
+output allocation, not numerical validation or the transition. `advance` also
+updates adaptive histories and kinetic momentum. Optimizer `step()` return
+conventions remain unchanged. Optimizer exceptions restore parameters, gradients,
+internal sampler state and owned RNG; native sampler errors retain their existing
+RNG-consumption behavior.
+
+For compatible pure tensor potentials, `lafa.execution.compile_potential` compiles
+the target and its gradient together:
+
+```python
+import torch
+from lafa.execution import compile_potential
+from lafa.samplers import MALA
+
+target = compile_potential(lambda x: x.square().sum(-1) / 2)
+chain = MALA(target, torch.zeros(4, 2), step_size=0.1)
+chain.advance(100)
+```
+
+Randomness, state validation, acceptance orchestration and output selection remain
+outside that compiled region. First-call compilation is separate from warmed
+timings. Score-only and custom `value_and_grad` targets require their supported
+eager path; compilation failures are explicit. See the measured end-to-end
+benchmarks before choosing compilation for a workload.
+
+## Batched neural-network targets
+
+`ModulePotential(module, loss, args=..., batch_mode='vmap', chunk_size=None)` accepts
+one flattened parameter vector `(D,)` or independent states `(chains, D)`. The loss
+still maps one model output to a scalar. Each state uses isolated buffer copies,
+and ordinary tied parameters retain their ties. `value_and_grad` returns detached
+values and gradients with the same single/batched shape convention.
+
+Set `chunk_size` to bound simultaneous model activations when using
+`value_and_grad`, which differentiates and releases each chunk before the next.
+An ordinary differentiable call `target(x)` retains every chunk’s autograd graph
+until its later backward call. When composing a prior and likelihood, preserve
+the `value_and_grad` protocol as shown in tutorial 4. Use `batch_mode='loop'`
+for valid model operations that cannot be transformed with `torch.func.vmap`;
+unsupported transformed operations raise an actionable error. Inputs, targets,
+model state and generators must use compatible devices/dtypes. A changing
+minibatch or stochastic module does not define a deterministic MALA target.
+
+`FunctionSpaceSVGD(..., vectorized=True, chunk_size=8)` and the inherited
+function-space repulsive ensemble opt into batched function maps and destination
+VJPs. Their loop default is preserved. Chunking affects execution and memory,
+not the requirement to define an explicit function-space target/prior.
+
+## Chain quality and Monte Carlo error
+
+For retained stationary **independent chains** with shape `(chains, draws, D)`,
+use `rank_normalized_split_rhat`, `bulk_effective_sample_size`,
+`tail_effective_sample_size`, `mcse_mean`, and `mcse_quantile` from
+`lafa.diagnostics`. The new split ESS/MCSE functions require at least 10 draws.
+Tail ESS uses the lower and upper quantile indicators; its default probability is
+0.05. Quantile MCSE uses an ESS-adjusted beta interval. The ESS cap is conservative
+for antithetic chains; undefined constant chains return NaN. These functions
+retain chain/time axes and must not be applied to interacting particles.
+
+MCSE describes finite-run estimator variability; it does not account for missed
+modes, adaptation bias or a wrong target. Quantile MCSE performs scalar CPU beta
+inversion, including device synchronization when inputs are on CUDA. Rhat uses
+PyTorch for ordinary inputs; ambiguous folded-distance comparisons use exact
+CPU scalar ranks to preserve extreme-range ordering. Compute diagnostics
+periodically, outside the transition hot path.
+
 ## Recording and checkpoints
 
 `Recorder` accepts arbitrary named tensor fields. Select only required fields and a stride; derive spatial projections or predictions before passing them when full states are unnecessary. The recorder detaches and owns selected snapshots, preserves dtype by default, and writes atomic tensor chunks plus a JSON manifest. Use `storage_dtype` only when lossy precision is acceptable.
@@ -25,8 +104,11 @@ with Recorder('/tmp/lafa-trace', fields=['position', 'gradient'],
               every=10, chunk_size=32, max_buffer_bytes=8 * 1024**2,
               async_write=True) as trace:
     for step in range(1000):
-        result = chain.step()   # an already constructed tensor sampler
-        trace.record(step, position=result.position, gradient=result.gradient)
+        if step % 10 == 0:
+            selected = chain.step(fields=('position', 'gradient'))
+            trace.record(step, **selected)
+        else:
+            chain.step(fields=())
 ```
 
 `max_buffer_bytes` bounds reserved tensor payloads including pending writer chunks; producer backpressure waits for capacity. A selected record larger than the limit is rejected. The cap excludes Python/serialization overhead and manifest entries, which grow with the number of committed chunks. Device-to-host staging is synchronous; `async_write` overlaps **disk** writing. `flush()` or context exit waits for persistence and propagates writer errors. Saving every field every step necessarily costs transfer, memory bandwidth and storage.

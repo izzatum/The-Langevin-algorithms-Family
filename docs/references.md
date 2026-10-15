@@ -29,8 +29,9 @@ Metadata were checked on 16 October 2026 (client-local date) using Python `urlli
 | SA-LEnKF | [R17](#r17) | Specified from author manuscript Algorithms 1–2 and supplement Algorithms 3–4; implementation/validation tracked separately. Filtering states and learning unknown parameters are separate tasks. |
 | KL-driven Wasserstein–Fisher–Rao (WFR)/birth–death sampling | [R18](#r18) | Specified from arXiv v1, Eqs. (5)–(8), (13)–(14), Algorithm 1; implementation/validation tracked separately. Transport plus reaction/birth–death; finite-particle approximations and normalized weights/ancestry remain explicit. |
 | Rank-normalized folded split R-hat | [R21](#r21) | Split chains, rank normalization, and folded scale-sensitive comparison; assess both location and scale. Use multiple suitable MCMC chains, rather than treating interacting particles as independent chains. |
-| Raw-mean effective sample size (ESS) | [R22](#r22), pooling context in [R21](#r21) | Pooled autocorrelation estimate with Geyer initial positive and monotone paired sums. This implementation estimates ESS for the raw sample mean; it does not implement rank-normalized bulk ESS or quantile/tail ESS. |
+| Raw-mean, bulk and tail effective sample size (ESS); Monte Carlo error | [R22](#r22), [R21](#r21) | Raw mean ESS retains its existing convention. Split rank-normalized bulk ESS, lower/upper indicator tail ESS, mean MCSE and ESS-adjusted beta-interval quantile MCSE assess independent stationary chains. Conservative ESS caps and minimum draw requirements are documented in the API. |
 | Online recording mean/variance | [R23](#r23) | Welford updates retain a count, mean, and corrected sum of squares without storing the trajectory. This is a streaming moment calculation, not an online substitute for exact full-chain ESS. |
+| Independent nonlinear benchmark reference: elliptical slice sampling | [R24](#r24) | Benchmark-only Gaussian-prior reference; Figure 2's randomized angular bracket and likelihood slice. Finite reference runs still need mixing checks and Monte Carlo error estimates. |
 
 The explicit “not yet implemented” entry is a literature-gated extension, not a placeholder advertised as a working API. “Specified” means that a source formulation was reviewed, not that executable code or numerical validation is complete. Other rows describe the intended formulation, with current implementation, unavailable methods, and test status maintained in the algorithm register. No blanket implementation or validation claim is made by this table.
 
@@ -105,6 +106,9 @@ The explicit “not yet implemented” entry is a literature-gated extension, no
 <a id="r23"></a>
 **[R23]** B. P. Welford (1962). “Note on a Method for Calculating Corrected Sums of Squares and Products.” *Technometrics*, **4**(3), 419–420. DOI: [10.1080/00401706.1962.10490022](https://doi.org/10.1080/00401706.1962.10490022). The verified deposited author name uses initials.
 
+<a id="r24"></a>
+**[R24]** Iain Murray, Ryan Adams, and David MacKay (2010). “Elliptical slice sampling.” *Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics*, PMLR **9**, 541–548. [Original proceedings and paper](https://proceedings.mlr.press/v9/murray10a.html). The benchmark centers the nonzero Gaussian prior before applying the paper's zero-mean elliptical update.
+
 ## What was actually reviewed
 
 Review depth is evidence provenance, not a promise of implementation correctness. The planning review and this documentation pass are distinguished below.
@@ -126,7 +130,8 @@ Review depth is evidence provenance, not a promise of implementation correctness
 | R18 | Scientific implementation review: arXiv:1905.09863v1 (23 May 2019), Eqs. (5)–(8), (13)–(14), Algorithm 1 and stated theorem assumptions. |
 | R02, R05, R08, R09 | Planning: original abstracts. Documentation pass: original arXiv metadata. Full scheme review is separate from metadata verification; R05's published venue/DOI comes from its arXiv journal reference. |
 | R06, R19, R20 | Added here for underdamped analysis, the MH ratio, and foundational Langevin ergodicity, respectively. Original PMLR/arXiv metadata (R06) and deposited DOI metadata (R19/R20) were checked; their full derivations were not reviewed in this documentation pass. |
-| R21–R23 | Documentation pass: author lists, titles, publication years, venues, volumes/issues, page ranges, and DOIs verified by `urllib` against deposited Crossref metadata. Full-text derivations were not audited during this bibliography update; the map states the narrower implemented diagnostic scope. |
+| R21–R23 | Documentation pass: author lists, titles, publication years, venues, volumes/issues, page ranges, and DOIs verified by `urllib` against deposited Crossref metadata. Full-text derivations were not audited during that bibliography update. The improvement pass adds rank-normalized bulk ESS, quantile-indicator tail ESS and mean/quantile MCSE; frozen ArviZ 0.22/SciPy fixtures independently check numerical definitions, with conservative ESS caps and explicit undefined constant cases. The fixture generator is retained under `tests/data/`; these software cross-checks do not substitute for a proof audit. |
+| R24 | Improvement pass: original PMLR metadata and full paper, Figure 2's ellipse, randomized bracket, likelihood threshold and bracket-shrinking update. Independent Gaussian-conditioning tests and finite-reference diagnostics are separate implementation evidence. |
 
 The scientific implementation reviews above were performed by the project's method-review agents during this implementation round, using downloaded original full texts and appendices. They establish that the indicated definitions were examined; they are not an exhaustive independent proof audit, implementation completion claim, or statistical validation result.
 
