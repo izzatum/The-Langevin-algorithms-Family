@@ -1,0 +1,38 @@
+[
+  {
+    "notebook": "01_overdamped.ipynb",
+    "device": "cpu",
+    "status": "passed",
+    "seconds": 10.523574821000238
+  },
+  {
+    "notebook": "02_inertial.ipynb",
+    "device": "cpu",
+    "status": "passed",
+    "seconds": 24.369526336000035
+  },
+  {
+    "notebook": "03_specialized.ipynb",
+    "device": "cpu",
+    "status": "passed",
+    "seconds": 4.182346221999978
+  },
+  {
+    "notebook": "04_stein_particles.ipynb",
+    "device": "cpu",
+    "status": "passed",
+    "seconds": 9.879546673000277
+  },
+  {
+    "notebook": "05_ksd.ipynb",
+    "device": "cpu",
+    "status": "passed",
+    "seconds": 2.86271670799988
+  },
+  {
+    "notebook": "06_ensemble_hybrid.ipynb",
+    "device": "cpu",
+    "status": "passed",
+    "seconds": 9.92261514799975
+  }
+]

@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "Please cite this software and the original scientific sources for the algorithms used; see docs/references.md."
+title: "The Langevin Algorithms Family (LaFA)"
+type: software
+version: 0.1.0
+abstract: "PyTorch-native Langevin sampling, Stein variational inference and Bayesian uncertainty quantification, with selective recording and reproducible inverse-problem tutorials."
+keywords:
+  - Langevin dynamics
+  - PyTorch
+  - Bayesian inference
+  - uncertainty quantification
+  - inverse problems
+  - Stein variational inference
+authors:
+  - family-names: Izzatullah
+    given-names: Muhammad
+repository-code: "https://github.com/izzatum/The-Langevin-algorithms-Family"
+url: "https://github.com/izzatum/The-Langevin-algorithms-Family"
+license: MIT
