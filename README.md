@@ -1,1 +1,1 @@
-# The-Langevin-algorithms-Family-The-LaFA-
+# The Langevin algorithms Family (The-LaFA)
