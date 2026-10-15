@@ -30,6 +30,7 @@ ROOT = Path(__file__).resolve().parents[1]
 IMAGE = 'runpod/pytorch@sha256:cb154fcca15d1d6ce858cfa672b76505e30861ef981d28ec94bd44168767d853'
 EXECUTION_MS = 900_000
 TTL_MS = 1_200_000
+LIFETIME_SECONDS = 1800
 TERMINAL = {'COMPLETED', 'FAILED', 'CANCELLED', 'TIMED_OUT'}
 
 
@@ -193,17 +194,33 @@ def require_storage(endpoint, template):
         raise ValueError('Require verified 20GB container disk and zero volume')
 
 
-def setup_resources(state_path):
-    """Explicit management-only setup: min0/max1, private template, no jobs."""
+def setup_resources(state_path, ledger_path):
+    """Reserve and bound potentially billable setup, even without submitted jobs."""
     state_path = Path(state_path)
     if state_path.exists():
         raise ValueError('Receipt already exists; reconcile its resources before using a new path')
     name = 'lafa-validation-' + uuid.uuid4().hex
+    ledger_path = Path(ledger_path).resolve()
+    reservation_id = 'setup-' + uuid.uuid4().hex
+    # min0/max1 can launch an idle worker. Reserve before any remote mutation.
+    reserve_budget(ledger_path, reservation_id, reservation=1)
+    created_at = time.time()
     state = {'name': name, 'endpoint_name': name, 'template_name': name,
-             'created_at_unix': time.time(), 'job_submission_authorized': False,
+             'created_at_unix': created_at, 'job_submission_authorized': False,
+             'ledger_path': str(ledger_path), 'setup_reservation_id': reservation_id,
+             'setup_reservation_usd': 1,
+             'cleanup_deadline_unix': created_at + LIFETIME_SECONDS,
              'status': 'setup-started', 'setup_verified': False}
     write_json(state_path, state)
+    watcher = None
     try:
+        # This immutable unique-name snapshot already identifies resources if a
+        # POST succeeds but its response/receipt is lost. Await child readiness.
+        snapshot = state_path.with_name(state_path.name + '.' + uuid.uuid4().hex + '.ownership.json')
+        watcher = start_watchdog(state, snapshot, state['cleanup_deadline_unix'])
+        state['watchdog_snapshot'] = str(snapshot.resolve())
+        state['watchdog_pid'] = watcher.pid
+        write_json(state_path, state)
         template_settings = {'name': name, 'imageName': IMAGE, 'isPublic': False,
             'isServerless': True, 'containerDiskInGb': 20, 'volumeInGb': 0,
             'ports': [], 'dockerEntrypoint': ['python', '-u', '-c'],
@@ -212,10 +229,12 @@ def setup_resources(state_path):
         # this unique name; POST itself is never retried.
         state['status'] = 'template-creation-started'
         write_json(state_path, state)
+        require_lifetime(state, 120)
         template = management('/templates', 'POST', template_settings)
         state['template_id'] = template['id']
         state['status'] = 'endpoint-creation-started'
         write_json(state_path, state)
+        require_lifetime(state, 120)
         endpoint = management('/endpoints', 'POST', {
             'name': name, 'templateId': state['template_id'], 'computeType': 'GPU',
             'gpuCount': 1, 'gpuTypeIds': ['NVIDIA RTX A4000'], 'workersMin': 0,
@@ -234,13 +253,14 @@ def setup_resources(state_path):
                 raise ValueError('Provider changed setup field: ' + field)
         if template.get('isPublic', False) is not False or template.get('imageName') != IMAGE:
             raise ValueError('Provider changed private template image/settings')
-        state.update(status='idle-no-jobs', setup_verified=True)
+        state.update(status='ready-no-job-submitted', setup_verified=True)
         write_json(state_path, state)
         return state
     except Exception as original:
         state['setup_error'] = str(original)
-        unknown_field = ('template_id' if state['status'] == 'template-creation-started' else 'endpoint_id')
-        unknown_post = unknown_field not in state
+        unknown_field = {'template-creation-started': 'template_id',
+                         'endpoint-creation-started': 'endpoint_id'}.get(state['status'])
+        unknown_post = unknown_field is not None and unknown_field not in state
         state['uncertain_creation'] = unknown_field if unknown_post else None
         state['reconcile_required'] = unknown_post
         try:
@@ -261,11 +281,16 @@ def setup_resources(state_path):
             state['cleanup_error'] = str(error)
         state['status'] = 'setup-failed'
         write_json(state_path, state)
+        if watcher and state.get('cleanup_confirmed'):
+            watcher.terminate()
         raise
 
 
-def load_state(path, *, allow_partial=False):
-    state = json.loads(Path(path).read_text())
+def load_state(path, *, allow_partial=False, expected_sha256=None):
+    raw = Path(path).read_bytes()
+    if expected_sha256 is not None and digest(raw) != expected_sha256:
+        raise ValueError('Watchdog ownership snapshot checksum mismatch')
+    state = json.loads(raw)
     for field in ('endpoint_id', 'template_id'):
         if allow_partial and field not in state:
             continue
@@ -280,23 +305,37 @@ def load_state(path, *, allow_partial=False):
     return state
 
 
+def reconcile_setup(state):
+    """Resolve IDs by the receipt's unique names after interrupted POSTs."""
+    for collection, field, name_field in (('endpoints', 'endpoint_id', 'endpoint_name'),
+                                          ('templates', 'template_id', 'template_name')):
+        if field in state:
+            continue
+        matches = [resource for resource in retry_management('/' + collection)
+                   if resource.get('name') == state[name_field]]
+        if len(matches) > 1:
+            raise ValueError('Ambiguous setup resources; manual reconciliation required')
+        if matches:
+            resource_id = matches[0].get('id', '')
+            if not re.fullmatch(r'[A-Za-z0-9_-]{1,80}', resource_id):
+                raise ValueError('Invalid reconciled resource ID')
+            state[field] = resource_id
+            if collection == 'endpoints' and 'template_id' not in state:
+                # The exact unique endpoint name proves task ownership. Its
+                # template relationship lets cleanup stop GPU before template
+                # inventory becomes available; template deletion still checks
+                # the exact recorded template name independently.
+                template_id = matches[0].get('templateId', '')
+                if not re.fullmatch(r'[A-Za-z0-9_-]{1,80}', template_id):
+                    raise ValueError('Invalid reconciled endpoint template ID')
+                state['template_id'] = template_id
+
+
 def cleanup_receipt(path):
     """Recover interrupted creation by its saved unique name, then stop/delete."""
     state = load_state(path, allow_partial=True)
     try:
-        for collection, field, name_field in (('endpoints', 'endpoint_id', 'endpoint_name'),
-                                              ('templates', 'template_id', 'template_name')):
-            if field in state:
-                continue
-            matches = [resource for resource in retry_management('/' + collection)
-                       if resource.get('name') == state[name_field]]
-            if len(matches) > 1:
-                raise ValueError('Ambiguous setup resources; manual reconciliation required')
-            if matches:
-                resource_id = matches[0].get('id', '')
-                if not re.fullmatch(r'[A-Za-z0-9_-]{1,80}', resource_id):
-                    raise ValueError('Invalid reconciled resource ID')
-                state[field] = resource_id
+        reconcile_setup(state)
         write_json(path, state)
         cleanup(state)
         uncertain = state.get('uncertain_creation')
@@ -402,15 +441,76 @@ def cleanup(state, rounds=3):
             time.sleep(min(10, 2 ** attempt))
 
 
-def watchdog(state_path, deadline):
+def start_watchdog(state, snapshot, deadline):
+    """Arm cleanup before allocation; no key is written to disk or command line."""
+    snapshot = Path(snapshot).resolve()
+    write_json(snapshot, state)
+    checksum = digest(snapshot.read_bytes())
+    os.chmod(snapshot, 0o400)
+    ready = snapshot.with_suffix('.ready')
+    with snapshot.with_suffix('.log').open('ab') as log:
+        watcher = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), '_watchdog',
+            '--state', str(snapshot), '--deadline', str(deadline),
+            '--ownership-sha256', checksum, '--ready-file', str(ready)],
+            stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+    startup_deadline = time.monotonic() + 10
+    while time.monotonic() < startup_deadline:
+        if watcher.poll() is not None:
+            raise RuntimeError('Cleanup watchdog exited before readiness; no allocation permitted')
+        if ready.exists() and ready.read_text() == checksum:
+            return watcher
+        time.sleep(.05)
+    watcher.terminate()
+    raise RuntimeError('Cleanup watchdog did not become ready; no allocation permitted')
+
+
+def watchdog(state_path, deadline, ownership_sha256, ready_file=None):
+    # Read once before acknowledgement; later edits cannot redirect cleanup.
+    state = load_state(state_path, allow_partial=True, expected_sha256=ownership_sha256)
+    if ready_file is not None:
+        Path(ready_file).write_text(ownership_sha256)
     while time.time() < deadline:
         time.sleep(min(10, max(.01, deadline - time.time())))
-    state = load_state(state_path)
-    cleanup(state, rounds=5)
+    for attempt in range(5):
+        try:
+            reconcile_setup(state)
+            cleanup(state)
+            if attempt < 4 and not all(field in state for field in ('endpoint_id', 'template_id')):
+                # A lost POST response can precede inventory visibility. Leave
+                # a bounded reconciliation grace after the lifecycle deadline.
+                time.sleep(10)
+                continue
+            return
+        except (RuntimeError, OSError):
+            if attempt == 4:
+                raise
+            time.sleep(min(10, 2 ** attempt))
+
+
+def require_lifetime(state, minimum_remaining=0):
+    deadline = state.get('cleanup_deadline_unix')
+    if (not isinstance(deadline, (int, float)) or not math.isfinite(deadline)
+            or deadline <= time.time() + minimum_remaining):
+        raise ValueError('Insufficient setup lifetime remaining; clean up and budget a new setup')
+
+
+def require_setup_budget(state, ledger_path):
+    recorded_path = state.get('ledger_path')
+    reservation_id = state.get('setup_reservation_id')
+    if not recorded_path or not reservation_id:
+        raise ValueError('Legacy/unbudgeted setup receipt: clean up and create setup with --ledger')
+    if Path(recorded_path).resolve() != Path(ledger_path).resolve():
+        raise ValueError('Run must use the same persistent ledger as setup')
+    ledger = json.loads(Path(ledger_path).read_text())
+    reservations = [row for row in ledger.get('attempts', []) if row.get('run_id') == reservation_id]
+    if (len(reservations) != 1 or not 1 <= Decimal(str(reservations[0]['reservation_usd'])) <= 3):
+        raise ValueError('Setup reservation missing or invalid in shared ledger')
+    require_lifetime(state, TTL_MS / 1000 + 60)
 
 
 def run(args, state):
-    # Scope must work before mutations, budget reservations, or any paid allocation.
+    require_setup_budget(state, args.ledger)
+    # Scope must work before further mutations/reservations; setup may be billable.
     health = api('api.runpod.ai', '/v2/' + state['endpoint_id'] + '/health')
     require_idle_health(health)
     endpoint = verify_owned(state)
@@ -439,15 +539,10 @@ def run(args, state):
                'execution_timeout_ms': EXECUTION_MS, 'ttl_ms': TTL_MS, 'job_submitted': False}
     write_json(output / 'receipt.json', receipt)
     ownership_snapshot = output / 'ownership.json'
-    write_json(ownership_snapshot, state)
     watcher = None
     try:
         # A detached cloud watchdog complements provider TTL; it cannot survive loss of this machine.
-        watcher_log = (output / 'watchdog.log').open('ab')
-        watcher = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), '_watchdog',
-                                    '--state', str(ownership_snapshot.resolve()), '--deadline', str(time.time() + 1800)],
-                                   stdout=watcher_log, stderr=subprocess.STDOUT, start_new_session=True)
-        watcher_log.close()
+        watcher = start_watchdog(state, ownership_snapshot, state['cleanup_deadline_unix'])
         template_settings = {
             'imageName': IMAGE, 'isServerless': True, 'isPublic': False,
             'containerDiskInGb': 20, 'volumeInGb': 0, 'ports': [],
@@ -474,6 +569,7 @@ def run(args, state):
         require_idle_health(api('api.runpod.ai', '/v2/' + state['endpoint_id'] + '/health'))
         receipt['submission_started_unix'] = time.time()
         write_json(output / 'receipt.json', receipt)
+        require_lifetime(state, TTL_MS / 1000 + 60)
         # Deliberately no automatic retry: an uncertain HTTP response may hide a real job.
         response = api('api.runpod.ai', '/v2/' + state['endpoint_id'] + '/run', 'POST', body)
         receipt.update(job_id=response['id'], job_submitted=True)
@@ -514,6 +610,8 @@ def main(argv=None):
     parser.add_argument('--run-budget', type=float, default=3)
     parser.add_argument('--hourly-ceiling', type=float, default=.70)
     parser.add_argument('--deadline', type=float)
+    parser.add_argument('--ownership-sha256', help=argparse.SUPPRESS)
+    parser.add_argument('--ready-file', type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     if args.action == 'prepare':
         if not args.payload:
@@ -527,21 +625,24 @@ def main(argv=None):
     if not args.state:
         parser.error('this action requires --state')
     if args.action == 'setup':
-        print(json.dumps(setup_resources(args.state)))
+        if not args.ledger:
+            parser.error('setup requires --ledger because idle workers can be billable')
+        print(json.dumps(setup_resources(args.state, args.ledger)))
         return 0
     if args.action == 'cleanup':
         cleanup_receipt(args.state)
         print('Task endpoint and unused task template deletion confirmed')
         return 0
+    if args.action == '_watchdog':
+        if (not args.deadline or not math.isfinite(args.deadline)
+                or not re.fullmatch('[0-9a-f]{64}', args.ownership_sha256 or '')):
+            parser.error('watchdog requires an absolute deadline and ownership checksum')
+        watchdog(args.state, args.deadline, args.ownership_sha256, args.ready_file)
+        return 0
     state = load_state(args.state)
     if args.action == 'health':
         verify_owned(state)
         print(json.dumps(api('api.runpod.ai', '/v2/' + state['endpoint_id'] + '/health')))
-        return 0
-    if args.action == '_watchdog':
-        if not args.deadline or not math.isfinite(args.deadline):
-            parser.error('watchdog requires an absolute deadline')
-        watchdog(args.state, args.deadline)
         return 0
     if not args.execute or not args.approved_payload_sha256 or not args.payload or not args.ledger:
         parser.error('run requires --execute, --payload, --approved-payload-sha256 and --ledger')
