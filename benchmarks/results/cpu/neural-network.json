@@ -1,0 +1,2745 @@
+{
+  "device": "cpu",
+  "dtype": "float64",
+  "seed": 20261015,
+  "torch": "2.6.0+cpu",
+  "python": "3.12.14",
+  "cpu_threads": 1,
+  "hardware": "x86_64",
+  "notes": [
+    "Warmup excluded from timing. Repeated evaluations are deterministic at fixed states.",
+    "CPU RSS is a shared-process cumulative high-water mark, not attributable peak allocation per row.",
+    "Hidden activation bytes count one tensor only, not total activation memory or autograd storage.",
+    "Function-space timings measure outputs and destination VJPs, excluding particle kernel interactions.",
+    "CUDA validation remains pending unless this report explicitly records device=cuda."
+  ],
+  "scaling": [
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0004033169998365338,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0003935786000511143,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0007783420001032937,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00033358620003127727,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 3.552713678800501e-15,
+      "hidden_activation_tensor_bytes": 2048,
+      "process_peak_rss_KiB": 209624
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.002713936999953148,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0007049492000078317,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0003590900000745023,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00038956660000621923,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 3.552713678800501e-15,
+      "hidden_activation_tensor_bytes": 2048,
+      "process_peak_rss_KiB": 209624
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.001066285999968386,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005557968000175606,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.000511620999986917,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005834044000039285,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 3.552713678800501e-15,
+      "hidden_activation_tensor_bytes": 2048,
+      "process_peak_rss_KiB": 209624
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0008092289999694913,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005846181999913825,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005647500001941808,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006791886000428349,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.552713678800501e-15,
+      "max_abs_gradient_error": 2.1316282072803006e-14,
+      "hidden_activation_tensor_bytes": 2048,
+      "process_peak_rss_KiB": 234668
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0007918219998828135,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006194386000061058,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005727030002162792,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005232117999184993,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.552713678800501e-15,
+      "max_abs_gradient_error": 2.1316282072803006e-14,
+      "hidden_activation_tensor_bytes": 2048,
+      "process_peak_rss_KiB": 234668
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0005285160000312317,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005705810000108613,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005157259997758956,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005682454000634606,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.552713678800501e-15,
+      "max_abs_gradient_error": 2.1316282072803006e-14,
+      "hidden_activation_tensor_bytes": 2048,
+      "process_peak_rss_KiB": 234668
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.002142366000043694,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0020502307999777257,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.002012960999763891,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0024290772000313153,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 16384,
+      "process_peak_rss_KiB": 234668
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0022961470003792783,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0020658501999605504,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0022338429998853826,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.003227936800067255,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 234796
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0035187379999115365,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0026808069999788133,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0020732109996970394,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0021106958000018496,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 16384,
+      "process_peak_rss_KiB": 234796
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006290070000432024,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006041818000085186,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0006043200000931392,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005531227999199473,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 2.2737367544323206e-13,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 16384,
+      "process_peak_rss_KiB": 234796
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0012599470001077862,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0010863176000384556,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0009802760000638955,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0009681396000814857,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 2.2737367544323206e-13,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 234796
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006214750001163338,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005759669999861217,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005446600002869673,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005497476000527968,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 2.2737367544323206e-13,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 16384,
+      "process_peak_rss_KiB": 234796
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.005886542999633093,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.006358254999940982,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.007871822000197426,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.007371349999993981,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 2.2737367544323206e-13,
+      "hidden_activation_tensor_bytes": 65536,
+      "process_peak_rss_KiB": 234796
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0075346039998294145,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.007340539800043189,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.007239919999847189,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0070989039999403755,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 2.2737367544323206e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 234796
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.006356139000217809,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0064724027999545795,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.007197216999884404,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.007045030800054519,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 2.2737367544323206e-13,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 234796
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0007152670000323269,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006783874000575452,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0007386120000774099,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006490252000730834,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 2.2737367544323206e-13,
+      "max_abs_gradient_error": 2.2737367544323206e-13,
+      "hidden_activation_tensor_bytes": 65536,
+      "process_peak_rss_KiB": 234796
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.004324341000028653,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.004310533800071426,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.003982416999861016,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00390293020000172,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 2.2737367544323206e-13,
+      "max_abs_gradient_error": 2.2737367544323206e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.00200992599957317,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0013377981999838084,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0012774639999406645,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0011052939999899535,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 2.2737367544323206e-13,
+      "max_abs_gradient_error": 2.2737367544323206e-13,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0004070029999638791,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0003751848000320024,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0003204120002919808,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0003685510000650538,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.00040999799966812134,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00044044119995305663,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.00031996200004869024,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0003132275999632839,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0004007530001217674,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00035806519999823647,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0004465130000426143,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00030890500001987673,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006225970000741654,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006235668000044825,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005582900002991664,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005157304000022123,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0005567890002566855,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.000562450799952785,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005483259997163259,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005555443999583076,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0005636179998873558,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.000617709800008015,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005967890001556952,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005332948000614124,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0017330089999632037,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.001720037599989155,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0023821859999770822,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.002252855799997633,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 5.684341886080801e-13,
+      "hidden_activation_tensor_bytes": 65536,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0018280419999427977,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0018838801999663702,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.002989231000356085,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.002049898400036909,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 5.684341886080801e-13,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.002288775999659265,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.001961505200051761,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0020292450003580598,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0019839649999994434,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 5.684341886080801e-13,
+      "hidden_activation_tensor_bytes": 65536,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006892970000080823,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006715049999911571,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0007674049998058763,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0007740113999716413,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 4.547473508864641e-13,
+      "max_abs_gradient_error": 6.821210263296962e-13,
+      "hidden_activation_tensor_bytes": 65536,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0012935979998474068,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0012358768000012787,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0011247940001339884,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.001251003600009426,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 4.547473508864641e-13,
+      "max_abs_gradient_error": 6.821210263296962e-13,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006473240000559599,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0007488954000109515,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.001152034999904572,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0007854164000491437,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 4.547473508864641e-13,
+      "max_abs_gradient_error": 6.821210263296962e-13,
+      "hidden_activation_tensor_bytes": 65536,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.007165378000081546,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.006629599400002917,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.009948197999619879,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.015345587999945565,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.0231815394945443e-12,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.014929848999599926,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.01464409179998256,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.013645504000123765,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.013766079800006992,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.0231815394945443e-12,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.006375417999606725,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.007166121199952613,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.009525942999971448,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.007444219799981511,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.0231815394945443e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 234924
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0010853849998966325,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0009496257999671798,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0012970729999324249,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0011878763999447982,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 9.094947017729282e-13,
+      "max_abs_gradient_error": 1.0231815394945443e-12,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0068533680000655295,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.005825636999998096,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.004964593999829958,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00505403919996752,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 9.094947017729282e-13,
+      "max_abs_gradient_error": 1.0231815394945443e-12,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 8,
+      "parameters": 25,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0017010809997373144,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.005778447800003051,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0018612029998621438,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0018796018000102777,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 9.094947017729282e-13,
+      "max_abs_gradient_error": 1.0231815394945443e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0005902589996367169,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00047241920001397377,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.00033523499996590544,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0004441368000698276,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.00039990300001591095,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.000438425999982428,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.00037996200035195216,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00043882859999939684,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.00037999200003469014,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0004570761999275419,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0003155749996039958,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0003695041999890236,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006003040002724447,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005661383999722603,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005954070002189837,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006516209999972489,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006076650001887174,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006670664000012038,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005921409997426963,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0007349664000685152,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0005945549996795307,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.000627230200007034,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005535940003937867,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005738980000387528,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.1368683772161603e-13,
+      "hidden_activation_tensor_bytes": 8192,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0017505360001450754,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.005402143399987835,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0023638689999643248,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0023557827999866276,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 65536,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.002607205000003887,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0022251602000324055,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.002748368000084156,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.002459761200043431,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.00199429299982512,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0022538974000781307,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0021951850003461004,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.006527104999986477,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 65536,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006879160000607953,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00067279699997016,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0007739950001450779,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0007647114000064903,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 4.547473508864641e-13,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 65536,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0018360849999226048,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.001618945599966537,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0015389870000035444,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0015349489999607613,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 4.547473508864641e-13,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0009583930000189866,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0009196666000207187,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.000939465000101336,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0009455515999434283,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 4.547473508864641e-13,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 65536,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.010199797000041144,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.007269540800007235,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.00803337500019552,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.012453304399969056,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 6.821210263296962e-13,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.007760533999771724,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.011303524399954768,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.008147536999786098,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.009447399800046696,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 6.821210263296962e-13,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.010504966000098648,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.009442308000052435,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.022968900999785546,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.015317972599950736,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 6.821210263296962e-13,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.001782634000392136,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0012081269999725918,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.001613650000308553,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.001257012600035523,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 4.547473508864641e-13,
+      "max_abs_gradient_error": 6.821210263296962e-13,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.005994284999815136,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.005770900600055029,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.031190714000331354,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.004762452400063922,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 4.547473508864641e-13,
+      "max_abs_gradient_error": 6.821210263296962e-13,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0014478099997177196,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0014850777999527054,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0015278199998647324,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0016256074000011722,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 4.547473508864641e-13,
+      "max_abs_gradient_error": 6.821210263296962e-13,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.00042913699962809915,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00046004260002519004,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005206840000937518,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0004090337999514304,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.3073986337985843e-12,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0005296579997775552,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0004044610000164539,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0004637689999071881,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00038037260001146935,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.3073986337985843e-12,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0004911689998152724,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00043880659995920723,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.00039048799999363837,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0004018188000372902,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.3073986337985843e-12,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006769189999431546,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0008478263999677438,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0006781110000702029,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0007469246000255225,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.3073986337985843e-12,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006468940000559087,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.001617731599981198,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0009643419998610625,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.000992201799999748,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.3073986337985843e-12,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.001021418000163976,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0009859605999736232,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0009441510001124698,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0009658642000431427,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.3073986337985843e-12,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0038720499996998115,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0038854018000165523,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0039401819999511645,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.007919429200046579,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.3642420526593924e-12,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0024175200001081976,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.002530149399990478,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0026531240000622347,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.002600497200000973,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.3642420526593924e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.002494346000275982,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0021908763999817895,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0025094280003941094,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.008971865799958323,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.3642420526593924e-12,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0016382569997404062,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.001441726600023685,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0017269300001316878,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0016766881999501493,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 9.094947017729282e-13,
+      "max_abs_gradient_error": 1.3642420526593924e-12,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0023185710001598636,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.002281108200077142,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0024649010001667193,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.002466679600001953,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 9.094947017729282e-13,
+      "max_abs_gradient_error": 1.3642420526593924e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0009840910001912562,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0054603932000645726,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0017072499999812862,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0016711018000023614,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 9.094947017729282e-13,
+      "max_abs_gradient_error": 1.3642420526593924e-12,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 235692
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.01297530400006508,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.017493351600023743,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.03652085499970781,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.021043914600068093,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-12,
+      "hidden_activation_tensor_bytes": 1048576,
+      "process_peak_rss_KiB": 236204
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.015726536999864038,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.015966681000008975,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.009758231999967393,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.015427576399997634,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 236204
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.009267634000025282,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.012279733000013948,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.011346664000029705,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.017532670800028426,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-12,
+      "hidden_activation_tensor_bytes": 524288,
+      "process_peak_rss_KiB": 236204
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0031758310001350765,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.003143380600067758,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.005078334999780054,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.005710034999992786,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.637978807091713e-12,
+      "max_abs_gradient_error": 4.547473508864641e-12,
+      "hidden_activation_tensor_bytes": 1048576,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.008329080000294198,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.009216319999995903,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.03507562900040284,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.010447650799960684,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.637978807091713e-12,
+      "max_abs_gradient_error": 4.547473508864641e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 32,
+      "parameters": 97,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.02702648100012084,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.010545132399965951,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.006108916999892244,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00925794840004528,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.637978807091713e-12,
+      "max_abs_gradient_error": 4.547473508864641e-12,
+      "hidden_activation_tensor_bytes": 524288,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0007592530000692932,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0004607215999385517,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0005313099995873927,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00041031580003618727,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 8.526512829121202e-14,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.00044402900039131055,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00038737320001018815,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0003719400001500617,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0003523624000081327,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 8.526512829121202e-14,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0004031270000268705,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00040345139996134094,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0003579989997888333,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0004468887999792059,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 8.526512829121202e-14,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0008858140004122106,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006039472000338719,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0006013850002091203,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006401818000085768,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 8.526512829121202e-14,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.000569498000004387,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006161937999422662,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0006277749998844229,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0005946153999502712,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 8.526512829121202e-14,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.000614184999903955,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006640178000452579,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.000619062000168924,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0008888041999853158,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 8.526512829121202e-14,
+      "hidden_activation_tensor_bytes": 32768,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.004813136999928247,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.003981642799953988,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.004104580000330316,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.004110783000032825,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.004164369000136503,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.008389515200087771,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0038103470001260575,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.004040264800005388,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.004100864999600162,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.006760664600005839,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0040744940001786745,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.004155668800012791,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0015452259999619855,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0013741167999796744,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0016779659999883734,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0016382443999646058,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 9.094947017729282e-13,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0022601129999202385,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0021166186000300515,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0024453720002384216,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.006590075800068007,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 9.094947017729282e-13,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0014703739998367382,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0013274246000037238,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0016085120000752795,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0016280371999528142,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 9.094947017729282e-13,
+      "max_abs_gradient_error": 4.547473508864641e-13,
+      "hidden_activation_tensor_bytes": 262144,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.040451483000197186,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.020084650999979203,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.009631231000184926,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.014506857200012746,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.8189894035458565e-12,
+      "hidden_activation_tensor_bytes": 1048576,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.00892449699995268,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.015621845999976357,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.011080322999987402,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.015278619199943933,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.8189894035458565e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.012568312999974296,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0136814288000096,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.009651151000070968,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.013575118599965208,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 1.8189894035458565e-12,
+      "hidden_activation_tensor_bytes": 524288,
+      "process_peak_rss_KiB": 239084
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0026784720002979157,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0033905406000485526,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.004393315000015718,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.004926522400000977,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.637978807091713e-12,
+      "max_abs_gradient_error": 1.8189894035458565e-12,
+      "hidden_activation_tensor_bytes": 1048576,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.008539857999949163,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00830690479997429,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.00861389000010604,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.013009953600067093,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.637978807091713e-12,
+      "max_abs_gradient_error": 1.8189894035458565e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 32,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.005222342999786633,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.004778568599977007,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.005856536999999662,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.005764346799969644,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.637978807091713e-12,
+      "max_abs_gradient_error": 1.8189894035458565e-12,
+      "hidden_activation_tensor_bytes": 524288,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0007765390000713523,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0008019132000299578,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0007444510001732851,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0007695866000176465,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 3.637978807091713e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0008232489999500103,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006649310000284459,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.000857851000091614,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0008086154000011448,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 3.637978807091713e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0006705790001433343,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0007465057999979762,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0008546270000806544,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0006906298000103561,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 3.637978807091713e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.00111471900027027,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0009641516000556294,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0010936460002994863,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0011180751999745552,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 3.637978807091713e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0009223280003425316,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.001063575399984984,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0010004470000239962,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.001165779199982353,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 3.637978807091713e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 1,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0009339059997728327,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0010355452000112564,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0010093199998664204,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0011164327999722446,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 3.637978807091713e-12,
+      "hidden_activation_tensor_bytes": 131072,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.005128370999955223,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.004234885999994731,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.005851460000030784,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.005649616200025775,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 5.4569682106375694e-12,
+      "hidden_activation_tensor_bytes": 1048576,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.004038960999878327,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0029017087999818614,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.004014253999685025,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.008136680600000546,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 5.4569682106375694e-12,
+      "hidden_activation_tensor_bytes": 524288,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.002931062999778078,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0029330337999454057,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.004281677000108175,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.003962279400002444,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 5.4569682106375694e-12,
+      "hidden_activation_tensor_bytes": 1048576,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0029813490000378806,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.00718342339996525,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.005203553999763244,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.005161911799950758,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.637978807091713e-12,
+      "max_abs_gradient_error": 6.366462912410498e-12,
+      "hidden_activation_tensor_bytes": 1048576,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.003543415000422101,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.004325816799973836,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.0071153029998640704,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.004838104200007365,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.637978807091713e-12,
+      "max_abs_gradient_error": 6.366462912410498e-12,
+      "hidden_activation_tensor_bytes": 524288,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 8,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.002844173000084993,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.0027402757999880124,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.004188677000001917,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.009512338000058662,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 3.637978807091713e-12,
+      "max_abs_gradient_error": 6.366462912410498e-12,
+      "hidden_activation_tensor_bytes": 1048576,
+      "process_peak_rss_KiB": 239724
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.012315963000219199,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.021313769800053707,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.019774052000229858,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.02513001360002818,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 9.094947017729282e-12,
+      "hidden_activation_tensor_bytes": 4194304,
+      "process_peak_rss_KiB": 243476
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.0512260060004337,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.02691310420004811,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.03845990499985419,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.021248954400016375,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 9.094947017729282e-12,
+      "hidden_activation_tensor_bytes": 524288,
+      "process_peak_rss_KiB": 243476
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "loop",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.013932267000200227,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.021873875399978714,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.034466702999907284,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.025487876399984087,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 0.0,
+      "max_abs_gradient_error": 9.094947017729282e-12,
+      "hidden_activation_tensor_bytes": 2097152,
+      "process_peak_rss_KiB": 243476
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": null,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.014648153999587521,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.015639811400069446,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.01676345899977605,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.026405289600006654,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 7.275957614183426e-12,
+      "max_abs_gradient_error": 1.4551915228366852e-11,
+      "hidden_activation_tensor_bytes": 4194304,
+      "process_peak_rss_KiB": 252404
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 4,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.009153031000096234,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.009076154800004588,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.013284482000017306,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.019252072000017505,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 7.275957614183426e-12,
+      "max_abs_gradient_error": 1.4551915228366852e-11,
+      "hidden_activation_tensor_bytes": 524288,
+      "process_peak_rss_KiB": 252404
+    },
+    {
+      "width": 128,
+      "parameters": 385,
+      "data_count": 128,
+      "chains": 32,
+      "batch_mode": "vmap",
+      "chunk_size": 16,
+      "target_value_and_grad": {
+        "warmup_seconds": 0.013341446000140422,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.01771516820008401,
+        "cuda_peak_allocated_bytes": null
+      },
+      "function_outputs_and_vjp": {
+        "warmup_seconds": 0.018378901000232872,
+        "timed_repetitions": 5,
+        "seconds_per_evaluation": 0.028150298800028395,
+        "cuda_peak_allocated_bytes": null
+      },
+      "max_abs_value_error": 7.275957614183426e-12,
+      "max_abs_gradient_error": 1.4551915228366852e-11,
+      "hidden_activation_tensor_bytes": 2097152,
+      "process_peak_rss_KiB": 252404
+    }
+  ],
+  "posterior_example": {
+    "method": "MALA",
+    "objective": "Bayesian weight posterior with full-data Gaussian likelihood and independent Gaussian weight prior",
+    "width": 4,
+    "parameters": 13,
+    "chains": 4,
+    "data_count": 24,
+    "noise_sd": 0.3,
+    "prior_sd": 0.7,
+    "seed": 20261015,
+    "data_and_initialization_seed": 20261115,
+    "proposal_seed": 20261016,
+    "burnin": 5000,
+    "retained_draws_per_chain": 10000,
+    "step_size": 0.0005,
+    "seconds": 15.851326576000247,
+    "acceptance_rate": [
+      0.9323333333333333,
+      0.9444666666666667,
+      0.9422666666666667,
+      0.9315333333333333
+    ],
+    "evaluated_parameter_states": 60004,
+    "evaluated_observation_residuals": 1440096,
+    "sample_shape": [
+      4,
+      10000,
+      13
+    ],
+    "prediction_shape": [
+      4,
+      10000,
+      41
+    ],
+    "posterior_mean_function_rmse": 0.07694263205807399,
+    "latent_pointwise_90_percent_coverage": 1.0,
+    "weight_diagnostics": {
+      "rank_normalized_split_rhat": [
+        1.2588490107790256,
+        1.2812488646286517,
+        1.2885002102058944,
+        1.3046375201380231,
+        1.1275675425752867,
+        1.186239161680372,
+        1.1130000620508853,
+        1.2712189354595276,
+        1.3981515685111643,
+        1.4019126879340342,
+        1.222449659284351,
+        1.2822903416500164,
+        1.0552912080711847
+      ],
+      "bulk_ess": [
+        12.435720931858341,
+        11.472085953813831,
+        11.121172700005566,
+        11.055429570797793,
+        21.271078893541226,
+        19.45086221774425,
+        30.183130687417126,
+        12.84106519186434,
+        8.538909742703988,
+        8.85731409262805,
+        16.14476211741119,
+        11.561042130846465,
+        46.9139977427194
+      ],
+      "tail_ess": [
+        33.68825556033724,
+        95.35321160305111,
+        44.36528087956066,
+        43.884703327120285,
+        16.913219459702468,
+        92.1431291702495,
+        45.06979563685903,
+        22.005058379439834,
+        36.12503558181094,
+        25.959377350384898,
+        86.19452367560844,
+        59.115753708431804,
+        110.95606625871078
+      ],
+      "mean_mcse": [
+        0.16471302140415758,
+        0.18404447773261717,
+        0.1715118928504778,
+        0.1857254744105683,
+        0.12279340471852004,
+        0.13167399373066585,
+        0.1146720172393679,
+        0.1974740620338788,
+        0.27900327470239517,
+        0.22515240696052116,
+        0.15034439808058087,
+        0.16793354023408577,
+        0.05821028249890898
+      ]
+    },
+    "predictive_function_diagnostics": {
+      "rank_normalized_split_rhat": [
+        1.0193752976217856,
+        1.0028491428687554,
+        1.0059463867133007,
+        1.0024025850463478,
+        1.0260528007866505
+      ],
+      "bulk_ess": [
+        221.18678068050255,
+        890.6391268593476,
+        364.9869967011465,
+        1348.8598038749628,
+        103.62698249439143
+      ],
+      "tail_ess": [
+        613.0405399811739,
+        2522.9560110171883,
+        637.7444768724015,
+        3915.447176838332,
+        282.0718005252582
+      ],
+      "mean_mcse": [
+        0.012994845771533483,
+        0.003309058795886402,
+        0.005249312815493066,
+        0.0026660324192674784,
+        0.022175636808485263
+      ]
+    },
+    "notes": [
+      "Finite-run diagnostics must be inspected; this run does not establish convergence.",
+      "Weight permutation symmetries can mix slowly even when predictions mix better.",
+      "Coverage is for one simulated dataset across correlated spatial locations, not calibrated repeated-dataset coverage.",
+      "No trusted exact high-dimensional posterior reference is available; no posterior bias estimate is asserted."
+    ]
+  }
+}

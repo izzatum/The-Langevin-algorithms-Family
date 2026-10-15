@@ -117,7 +117,12 @@ class SALEnKF(OwnedState):
 
     @staticmethod
     def _operator(operator,theta):
-        return operator(theta) if callable(operator) else operator
+        if not callable(operator):
+            return operator
+        # Keep the graph to theta during predictive differentiation. Snapshot
+        # outputs too: separate operators may reuse one callback work buffer.
+        value=operator(theta.clone())
+        return value.clone() if isinstance(value,torch.Tensor) else value
 
     def _operators(self,theta,observation):
         d=self._position.shape[1]; p=observation.numel()
@@ -140,7 +145,7 @@ class SALEnKF(OwnedState):
         with torch.enable_grad():
             t=base.detach().clone().requires_grad_()
             C,H,V=self._operators(t,observation)
-            means=self.transition(ancestors.detach(),t)
+            means=self.transition(ancestors.detach().clone(),t.clone())
             checked(means,ancestors,'transition means')
             S=H@C@H.T+V
             residual=observation-means@H.T
@@ -167,7 +172,7 @@ class SALEnKF(OwnedState):
             logits=particles.new_empty((len(particles),len(pool)))
             for start in range(0,len(pool),block_size):
                 block=pool[start:start+block_size]
-                means=self.transition(block,t)
+                means=self.transition(block.clone(),t.clone())
                 checked(means,block,'transition means')
                 for index,row in enumerate(particles):
                     residual=means-row
@@ -186,7 +191,8 @@ class SALEnKF(OwnedState):
         if t>1:
             with torch.no_grad():
                 C,_,_=self._operators(theta,observation)
-                means=self.transition(x,theta)
+                # x is already a private forecast buffer and is consumed here.
+                means=self.transition(x,theta.clone())
                 checked(means,x,'transition means')
                 x=means+noise_like(x,self.generator)@torch.linalg.cholesky(C).T
         for k in range(1,self.inner_steps+1):
@@ -201,7 +207,8 @@ class SALEnKF(OwnedState):
                         indices.append(torch.multinomial(probs,1,generator=self.generator))
                     ancestors_indices=torch.cat(indices)
                     ancestors=self._pool[ancestors_indices].detach()
-                    means=self.transition(ancestors,theta)
+                    # Retain the untransformed ancestors for predictive_score.
+                    means=self.transition(ancestors.clone(),theta.clone())
                     prior_gradient=torch.linalg.solve(C,(x-means).T).T
                 else:
                     _,prior_gradient=value_and_grad(self.prior_potential,x)

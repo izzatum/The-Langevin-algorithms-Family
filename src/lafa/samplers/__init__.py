@@ -1,4 +1,4 @@
-"""Eager independent-chain samplers. Cached targets must remain deterministic.
+"""Independent-chain samplers with eager transitions and optional compiled targets. Cached targets must remain deterministic.
 
 Call invalidate_cache() after changing target data/parameters. Results and public
 position/momentum properties are owned snapshots. State dicts include configuration
@@ -67,12 +67,59 @@ class ULA:
     def _h(self):
         return self.step_size.unsqueeze(-1)
 
-    def _snapshot(self, accepted=None, **stats):
-        return StepResult(self.position, self._value.clone(), self._gradient.clone(),
-                          None if accepted is None else accepted.clone(),
-                          {k: torch.as_tensor(v).detach().clone() for k,v in stats.items()})
+    @staticmethod
+    def _validate_fields(fields):
+        if fields is None:
+            return None
+        if not isinstance(fields, (tuple, list)):
+            raise TypeError('fields must be None or a tuple/list of field names')
+        allowed = {'position', 'potential', 'gradient', 'accepted', 'stats'}
+        if any(not isinstance(field, str) or field not in allowed for field in fields):
+            raise ValueError('unknown result field; use position, potential, gradient, accepted or stats')
+        if len(set(fields)) != len(fields):
+            raise ValueError('result fields must be unique')
+        return tuple(fields)
 
-    def step(self):
+    def _snapshot(self, accepted=None, *, fields=None, **stats):
+        if fields == ():
+            return None
+        requested = ('position', 'potential', 'gradient', 'accepted', 'stats') if fields is None else fields
+        result = {}
+        sources = {'position': self._position, 'potential': self._value,
+                   'gradient': self._gradient, 'accepted': accepted}
+        for field in requested:
+            if field == 'stats':
+                result[field] = {k: torch.as_tensor(v).detach().clone() for k, v in stats.items()}
+            else:
+                value = sources[field]
+                result[field] = None if value is None else value.detach().clone()
+        return StepResult(**result) if fields is None else result
+
+    def step(self, *, fields=None):
+        """Transition, returning an owned StepResult (default), selected dict, or None.
+
+        An empty tuple suppresses snapshots only: validation, randomness and
+        adaptation are identical. Invalid field selections fail before stepping.
+        As with the original native API, an evaluation exception can consume RNG;
+        restore a state_dict checkpoint to retry with the same random numbers.
+        """
+        fields = self._validate_fields(fields)
+        accepted, stats = self._transition(collect_stats=fields is None or 'stats' in fields)
+        return self._snapshot(accepted, fields=fields, **stats)
+
+    def advance(self, steps):
+        """Execute a nonnegative integer number of transitions without results.
+
+        Memory is bounded in the number of steps; adaptation/momentum histories
+        and all strict checks remain active. A failure keeps prior completed steps.
+        """
+        if isinstance(steps, bool) or not isinstance(steps, int) or steps < 0:
+            raise ValueError('steps must be a nonnegative integer')
+        for _ in range(steps):
+            self._transition(collect_stats=False)
+        return None
+
+    def _transition(self, *, collect_stats=True):
         x, g = self._position, self._gradient
         proposal = ula_step(x, g, self._h(), temperature=self.temperature, mobility=self.mobility, noise=self._noise())
         if self.corrected:
@@ -85,7 +132,7 @@ class ULA:
             evaluation_position = proposal
         v_new, g_new = self._evaluate(evaluation_position)
         accepted = None
-        stats = {'step_size': self.step_size}
+        stats = {'step_size': self.step_size} if collect_stats else {}
         if self.corrected:
             ratio = mala_log_acceptance(x, proposal, self._value, v_new, g, g_new, self._h(),
                                         temperature=self.temperature, mobility=self.mobility)
@@ -95,13 +142,14 @@ class ULA:
             self._position = torch.where(accepted.unsqueeze(-1), proposal, x)
             self._gradient = torch.where(accepted.unsqueeze(-1), g_new, g)
             self._value = torch.where(accepted, v_new, self._value)
-            stats['log_acceptance'] = torch.where(finite, ratio.clamp_max(0), torch.full_like(ratio, -float('inf')))
+            if collect_stats:
+                stats['log_acceptance'] = torch.where(finite, ratio.clamp_max(0), torch.full_like(ratio, -float('inf')))
         else:
             if not torch.isfinite(proposal).all() or not torch.isfinite(g_new).all() or (not getattr(self.potential_fn,'score_only',False) and not torch.isfinite(v_new).all()):
                 raise ValueError('nonfinite ULA transition; reduce step size or inspect target')
             self._position, self._value, self._gradient = proposal.detach(), v_new, g_new
         self.iteration += 1
-        return self._snapshot(accepted, **stats)
+        return accepted, stats
 
     def state_dict(self):
         data = {k: copy.deepcopy(v) for k,v in self.__dict__.items() if k not in ('potential_fn','generator')}
@@ -145,17 +193,19 @@ class _Lip:
             raise ValueError('initial step_size exceeds max_step_size')
         self._alpha = torch.full_like(self.step_size, float('inf'))
 
-    def step(self):
-        old_x, old_g, old_h = self._position.clone(), self._gradient.clone(), self.step_size.clone()
-        result = super().step()
+    def _transition(self, *, collect_stats=True):
+        # Transitions replace these tensors, so retaining references is sufficient.
+        old_x, old_g, old_h = self._position, self._gradient, self.step_size
+        accepted, stats = super()._transition(collect_stats=collect_stats)
         if self.adapt_steps is None or self.iteration <= self.adapt_steps:
             self.step_size = lip_step_size(self._position, old_x, self._gradient, old_g, old_h, self._alpha,
                                           mobility=self.mobility, lc=self.lc, max_step_size=self.max_step_size)
             moved = (self._position != old_x).any(-1)
             self._alpha = torch.where(moved, self.step_size/old_h, self._alpha)
-        result.stats['next_step_size'] = self.step_size.clone()
-        result.stats['adapting'] = torch.tensor(self.adapt_steps is None or self.iteration < self.adapt_steps, device=self._position.device)
-        return result
+        if collect_stats:
+            stats['next_step_size'] = self.step_size
+            stats['adapting'] = torch.tensor(self.adapt_steps is None or self.iteration < self.adapt_steps, device=self._position.device)
+        return accepted, stats
 
 
 class LipULA(_Lip, ULA):
@@ -185,7 +235,7 @@ class BAOAB(ULA):
     def momentum(self):
         return self._momentum.clone()
 
-    def step(self):
+    def _transition(self, *, collect_stats=True):
         h = self._h()
         p = self._momentum - h*self._gradient/2
         x = self._position + h*p/(2*self.mass)
@@ -194,7 +244,7 @@ class BAOAB(ULA):
         v,g = self._evaluate(x)
         p = p-h*g/2
         self._finish_kinetic(x,v,g,p)
-        return self._snapshot(step_size=self.step_size, momentum=self._momentum)
+        return None, {'step_size': self.step_size, 'momentum': self._momentum} if collect_stats else {}
 
     def _finish_kinetic(self,x,v,g,p):
         if not torch.isfinite(x).all() or not torch.isfinite(p).all() or not torch.isfinite(g).all() or (not getattr(self.potential_fn,'score_only',False) and not torch.isfinite(v).all()):
@@ -205,10 +255,10 @@ class BAOAB(ULA):
 
 class KineticLangevin(BAOAB):
     """Explicit Euler-Maruyama underdamped integrator (distinct from BAOAB)."""
-    def step(self):
+    def _transition(self, *, collect_stats=True):
         h=self._h()
         x=self._position+h*self._momentum/self.mass
         p=self._momentum-h*self._gradient-h*self.damping*self._momentum+(2*h*self.damping*self.mass*self.temperature).sqrt()*self._noise()
         v,g=self._evaluate(x)
         self._finish_kinetic(x,v,g,p)
-        return self._snapshot(step_size=self.step_size,momentum=self._momentum)
+        return None, {'step_size': self.step_size, 'momentum': self._momentum} if collect_stats else {}

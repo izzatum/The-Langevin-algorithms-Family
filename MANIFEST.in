@@ -1,0 +1,3 @@
+include benchmarks/*.py
+include scripts/*.py
+recursive-include tests/data *.json *.py

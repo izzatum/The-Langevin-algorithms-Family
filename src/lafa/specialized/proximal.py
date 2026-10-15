@@ -33,7 +33,9 @@ class _PIP(OwnedState):
         with torch.enable_grad():
             t=self._theta.detach().clone().requires_grad_()
             x=self._position.detach().clone().requires_grad_()
-            values=self.smooth_potential(t,x)
+            # Nonleaf copies let callbacks use in-place operations while the
+            # original leaves remain the differentiation coordinates.
+            values=self.smooth_potential(t.clone(),x.clone())
             checked(values,x,'smooth potential',(x.shape[0],))
             gs=torch.autograd.grad(values.sum(),(t,x),allow_unused=True) if values.requires_grad else (None,None)
         gt=torch.zeros_like(t) if gs[0] is None else gs[0]/x.shape[0]
@@ -41,6 +43,7 @@ class _PIP(OwnedState):
         return checked(gt,t,'theta gradient'),checked(gx,x,'latent gradient')
 
     def _prox(self,t,x):
+        # Inputs are private work buffers; callbacks may consume them.
         with torch.no_grad():
             pt,px=self.prox_joint(t,x,self.smoothing)
         pt=checked(pt,t,'per-particle parameter prox',(x.shape[0],t.numel()))
@@ -72,7 +75,7 @@ class MYIPLA(_PIP):
     def step(self,*,theta_noise=None,particle_noise=None):
         h,l=self.step_size,self.smoothing
         gt,gx=self._gradients()
-        pt,px=self._prox(self._theta,self._position)
+        pt,px=self._prox(self._theta.clone(),self._position.clone())
         t=self._theta-h*gt-h/l*(self._theta-pt)+math.sqrt(2*h/self._position.shape[0])*noise_like(self._theta,self.generator,theta_noise)
         x=self._position-h*gx-h/l*(self._position-px)+math.sqrt(2*h)*noise_like(self._position,self.generator,particle_noise)
         return self._finish_pair(t,x)
@@ -90,7 +93,7 @@ class PIPULA(_PIP):
 
     def step(self,*,theta_noise=None,particle_noise=None):
         h=self.step_size
-        t,x=self._prox(self._theta,self._position)
+        t,x=self._prox(self._theta.clone(),self._position.clone())
         t=t+math.sqrt(2*h/self._position.shape[0])*noise_like(self._theta,self.generator,theta_noise)
         x=x+math.sqrt(2*h)*noise_like(self._position,self.generator,particle_noise)
         return self._finish_pair(t,x)

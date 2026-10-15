@@ -55,8 +55,8 @@ class BirthDeathLangevin(OwnedState):
     def rates(self,particles=None):
         x=self._position if particles is None else particles
         with torch.no_grad():
-            u=self.potential(x)
-            checked(u,x,'potential',(len(x),))
+            u=self.potential(x.detach().clone())
+            u=checked(u,x,'potential',(len(x),))
             beta=gaussian_log_kde(x,self.bandwidth,block_size=self.block_size)+u
         return (beta-beta.mean()).detach()
 
