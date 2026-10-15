@@ -118,3 +118,66 @@ def test_rhat_folding_preserves_extreme_finite_scale(dtype, scale):
     expected = diagnostics.rank_normalized_split_rhat(x)
     actual = diagnostics.rank_normalized_split_rhat(x * scale)
     torch.testing.assert_close(actual, expected, rtol=2e-6, atol=2e-6)
+
+
+def test_quantile_indicators_preserve_order_across_extreme_dynamic_range():
+    from lafa.diagnostics.chains import _quantile_ess
+    x = torch.linspace(-1., 1., 160, dtype=torch.float64).reshape(4, 40, 1) * 1e-100
+    x[0, 0] = 1e300
+    # Independently generated with ArviZ 0.22 ESS and SciPy beta order bounds.
+    torch.testing.assert_close(_quantile_ess(x, .5), x.new_tensor([5.22748001281809]))
+    torch.testing.assert_close(diagnostics.tail_effective_sample_size(x), x.new_tensor([13.99696118605829]))
+    torch.testing.assert_close(diagnostics.mcse_quantile(x), x.new_tensor([3.773584905660377e-101]), atol=0, rtol=1e-12)
+
+
+def test_folded_rhat_preserves_scale_disagreement_with_extreme_outlier():
+    x = torch.randn(4, 100, 1, dtype=torch.float64, generator=torch.Generator().manual_seed(7)) * 1e-100
+    x[2:] *= .01
+    x[0, 0] = 1e300
+    # Independent Fraction midpoint distances + SciPy rankdata/normal scores.
+    # ArviZ gives 1.7326059271218899 after rounded subtraction breaks a tie.
+    torch.testing.assert_close(diagnostics.rank_normalized_split_rhat(x), x.new_tensor([1.733837818335806]))
+
+
+def test_folded_ranks_preserve_subnormal_differences_and_exact_median_tie():
+    from lafa.diagnostics.chains import _folded_rank_normalize, _rank_normalize
+    tiny = torch.nextafter(torch.tensor(0., dtype=torch.float64), torch.tensor(1., dtype=torch.float64))
+    x = torch.tensor([0., 0., 1., 2., 3., 4.], dtype=torch.float64).reshape(1, 6, 1)
+    x[0, 0] = -tiny
+    x[0, 1] = -2 * tiny
+    # Distances to median 1.5: .5,.5,1.5,1.5+tiny,1.5+2*tiny,2.5.
+    labels = x.new_tensor([3., 4., 0., 0., 2., 5.]).reshape_as(x)
+    torch.testing.assert_close(_folded_rank_normalize(x), _rank_normalize(labels))
+
+
+def test_quantile_indicator_uses_mathematical_order_at_neighboring_float_boundary():
+    from lafa.diagnostics.chains import _quantile_ess
+    one = torch.tensor(1., dtype=torch.float64)
+    lower = torch.nextafter(one, one + 1)
+    upper = torch.nextafter(lower, one + 1)
+    x = lower.expand(4, 40, 1).clone()
+    x[2:] = upper
+    assert torch.quantile(x.flatten(), .5) == upper  # rounded interpolation loses the lower half
+    # Mathematical midpoint lies strictly inside the gap; binary indicators
+    # are [1,1,0,0] per chain. Independent ArviZ ESS of those indicators is 5.
+    torch.testing.assert_close(_quantile_ess(x, .5), x.new_tensor([5.]))
+
+
+def test_ordinary_folded_rhat_does_not_transfer_draws_to_cpu(monkeypatch):
+    x = torch.randn(4, 100, 2, dtype=torch.float64, generator=torch.Generator().manual_seed(29))
+    def unexpected_transfer(self, *args, **kwargs):
+        raise AssertionError('ordinary folded Rhat must remain in PyTorch')
+    monkeypatch.setattr(torch.Tensor, 'cpu', unexpected_transfer)
+    assert torch.isfinite(diagnostics.rank_normalized_split_rhat(x)).all()
+
+
+def test_folded_rounding_bound_covers_subnormal_arithmetic():
+    from lafa.diagnostics.chains import _folded_rank_normalize, _rank_normalize
+    tiny = torch.nextafter(torch.tensor(0., dtype=torch.float64), torch.tensor(1., dtype=torch.float64))
+    x = torch.cat((torch.tensor([64., 40., 98., 42., 91., 53., 24., 6.], dtype=torch.float64) * tiny,
+                   torch.tensor([3.], dtype=torch.float64))).reshape(1, 9, 1)
+    # Median=53*tiny, so observations 64*tiny and 42*tiny both have distance
+    # 11*tiny. Dividing by maximum 3 rounds these distances differently, and
+    # a relative-only rounding error bound itself underflows to zero.
+    labels = x.new_tensor([1., 2., 5., 1., 4., 0., 3., 6., 7.]).reshape_as(x)
+    torch.testing.assert_close(_folded_rank_normalize(x), _rank_normalize(labels))

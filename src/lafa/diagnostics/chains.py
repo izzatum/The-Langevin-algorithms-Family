@@ -97,6 +97,70 @@ def _rank_normalize(draws):
     return (2**.5*torch.erfinv(2*probabilities-1)).reshape_as(draws)
 
 
+def _exact_folded_rank_normalize(draws):
+    """Rank exact median distances, preserving every represented binary value.
+
+    A shared floating scale can underflow small observations, and subtraction
+    can manufacture distance ties. Binary-rational integers avoid both. Distance
+    to the two middle order statistics' interval has the same ordering as
+    distance to their midpoint, without constructing a rounded median.
+    This reporting diagnostic transfers inputs to CPU for exact scalar ranks.
+    """
+    flat = draws.reshape(-1, draws.shape[-1])
+    cpu = flat.cpu()
+    labels = torch.empty_like(flat)
+    for dimension in range(flat.shape[-1]):
+        ratios = [value.as_integer_ratio() for value in cpu[:, dimension].tolist()]
+        denominator_bits = [denominator.bit_length() - 1 for _, denominator in ratios]
+        exponent = max(denominator_bits)
+        values = [numerator << (exponent - bits)
+                  for (numerator, _), bits in zip(ratios, denominator_bits)]
+        ordered = sorted(values)
+        lower, upper = ordered[(len(ordered) - 1) // 2], ordered[len(ordered) // 2]
+        distances = [max(lower - value, value - upper, 0) for value in values]
+        positions = {distance: index for index, distance in enumerate(sorted(set(distances)))}
+        labels[:, dimension] = draws.new_tensor([positions[distance] for distance in distances])
+    return _rank_normalize(labels.reshape_as(draws))
+
+
+def _folded_rank_normalize(draws):
+    """Torch folded ranks, with exact fallback for ambiguous float comparisons."""
+    # Float32 observations are represented exactly in float64; extra arithmetic
+    # precision keeps the ordinary path in Torch even for large float32 runs.
+    work = draws.to(torch.float64)
+    scaled = _scaled_chains(work)
+    flat = work.flatten(0, 1)
+    scaled_flat = scaled.flatten(0, 1)
+    original_ordered = flat.sort(dim=0).values
+    ordered = scaled_flat.sort(dim=0).values
+    lower = ordered[(len(ordered) - 1) // 2]
+    upper = ordered[len(ordered) // 2]
+    distance = torch.maximum(lower - scaled_flat, scaled_flat - upper).clamp_min(0)
+
+    # A dimension needs exact binary-rational ranking if scaling collapsed
+    # distinct observations, or a distance comparison is within its rounding
+    # error. Input duplicates and the exact two-middle-observation tie are safe.
+    collapsed = ((original_ordered[1:] != original_ordered[:-1])
+                 & (ordered[1:] == ordered[:-1])).any(0)
+    sorted_distance, indices = distance.sort(dim=0)
+    source = flat.gather(0, indices)
+    rounding = 4 * torch.finfo(work.dtype).eps * (
+        scaled_flat.abs() + torch.maximum(lower.abs(), upper.abs()) + distance
+    )
+    # Relative bounds can themselves underflow when scaled draws are subnormal.
+    # Four minimum subnormal units cover the absolute rounding in this path.
+    rounding += 4 * torch.finfo(work.dtype).tiny * torch.finfo(work.dtype).eps
+    errors = rounding.gather(0, indices)
+    ambiguous = ((sorted_distance[1:] - sorted_distance[:-1] <= errors[1:] + errors[:-1])
+                 & (source[1:] != source[:-1])
+                 & ((sorted_distance[1:] != 0) | (sorted_distance[:-1] != 0))).any(0)
+    exact = collapsed | ambiguous
+    result = _rank_normalize(distance.reshape_as(work)).to(draws.dtype)
+    if exact.any():
+        result[..., exact] = _exact_folded_rank_normalize(draws[..., exact])
+    return result
+
+
 def _rhat(draws):
     n=draws.shape[1]
     within=draws.var(1,unbiased=True).mean(0)
@@ -111,24 +175,16 @@ def rank_normalized_split_rhat(chains):
     Require >=2 independent chains and >=4 retained draws. Split into equal
     halves, discarding the central draw for odd lengths. Pooled tied values
     receive average ranks; Blom scores use (rank-3/8)/(count+1/4). Folding uses
-    the pooled median of split draws. Undefined constant cases return NaN,
+    the exact pooled median of split draws. Ambiguous floating comparisons use
+    exact binary-rational folded ranks on CPU and synchronize accelerator inputs. Undefined constant
+    cases return NaN,
     including cases where the folded rank statistic has no variation.
     """
     _validate_chains(chains,min_chains=2,min_draws=4)
     half=chains.shape[1]//2
     split=torch.cat((chains[:,:half],chains[:,-half:]),dim=0)
-    # Preserve raw ranks; shared scaling keeps folding subtraction finite even
-    # for finite inputs near the dtype maximum.
-    scaled=_scaled_chains(split)
-    ordered=scaled.flatten(0,1).sort(dim=0).values
-    lower=ordered[(len(ordered)-1)//2]
-    upper=ordered[len(ordered)//2]
-    # Ranking distance to the median interval is equivalent to ranking distance
-    # to its midpoint: it removes the same half-gap from every observed value.
-    # It also keeps the two central order statistics exactly tied.
-    distance=torch.maximum(lower-scaled,scaled-upper).clamp_min(0)
     rank=_rhat(_rank_normalize(split))
-    folded=_rhat(_rank_normalize(distance))
+    folded=_rhat(_folded_rank_normalize(split))
     return torch.maximum(rank,folded)
 
 
@@ -207,9 +263,13 @@ def _probability(probability, *, tail=False):
 
 def _quantile_ess(chains, probability):
     # Threshold BEFORE splitting, including the central draw at odd lengths.
-    scaled = _scaled_chains(chains)
-    threshold = torch.quantile(scaled.flatten(0, 1), probability, dim=0)
-    indicator = (scaled <= threshold).to(chains.dtype)
+    # A linearly interpolated quantile lies between adjacent pooled order
+    # statistics; no observed value lies strictly between them. Threshold at
+    # the lower order statistic preserves the mathematical indicator and ties
+    # without overflow, underflow, or interpolation rounding to the upper value.
+    ordered = chains.flatten(0, 1).sort(dim=0).values
+    threshold = ordered[int((len(ordered) - 1) * probability)]
+    indicator = (chains <= threshold).to(chains.dtype)
     return _split_ess(_split(indicator))
 
 
@@ -235,7 +295,9 @@ def tail_effective_sample_size(chains, *, probability=.05):
     """Minimum lower/upper quantile-indicator split ESS (Vehtari et al. 2021).
 
     probability must lie in (0, .5); thresholds are pooled linearly interpolated
-    quantiles at p and 1-p, using indicators x <= threshold. Count, shape and
+    quantiles at p and 1-p, using indicators x <= threshold. Order-statistic
+    comparisons preserve mathematical interpolation even for adjacent floats
+    whose rounded interpolated quantile would equal the upper value. Count, shape and
     cap match bulk_effective_sample_size. Constant indicators (including tied
     extreme quantiles) return NaN rather than manufactured convergence.
     """
@@ -317,7 +379,8 @@ def mcse_quantile(chains, probability=.5):
     capped at the retained split count. Require >=10 draws, >=1 independent
     chain, 0<p<1; constant indicators give NaN. Ties can give zero width despite
     positive indicator ESS; discrete quantiles need careful interpretation.
-    Arithmetic preserves extreme finite scales; results keep dtype/device.
+    Indicators use exact order comparisons rather than rounded interpolation;
+    arithmetic preserves extreme finite scales and results keep dtype/device.
     Beta inversion uses scalar CPU arithmetic, so this diagnostic synchronizes
     accelerator inputs and is intended for reporting rather than sampler steps.
     """
