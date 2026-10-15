@@ -13,7 +13,7 @@ bash scripts/setup_cloud.sh
 /workspace/lafa-venv/bin/python -m build
 ```
 
-The setup script was executed successfully and `pip check` passed. The package built as both wheel and source distribution; a separately installed wheel imported every public module family and ran a MALA smoke check outside the source checkout. The [CPU CI workflow](../.github/workflows/tests.yml) configures Python 3.11/3.12 checks; local evidence uses Python 3.12.14. The workflow has not yet run on GitHub.
+The setup script was executed successfully and `pip check` passed. The package built as both wheel and source distribution; a separately installed wheel imported every public module family and ran a MALA smoke check outside the source checkout. The [CPU CI workflow](../.github/workflows/tests.yml) passed on Python 3.11 and 3.12, including package builds and all six tutorials in the Python 3.12 job: [hosted validation run](https://github.com/izzatum/The-Langevin-algorithms-Family/actions/runs/38781383039). Local evidence uses Python 3.12.14; consult [current workflow results](https://github.com/izzatum/The-Langevin-algorithms-Family/actions/workflows/tests.yml) for subsequent revisions.
 
 ## Evidence included in the repository
 
