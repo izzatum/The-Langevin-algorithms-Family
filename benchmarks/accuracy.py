@@ -4,7 +4,7 @@ python benchmarks/accuracy.py --output benchmark-results/accuracy --device cpu
 
 JSON records actual run budgets, seeds, costs, moments, coordinate credible
 intervals and mode occupancy. Correlated production samples are not called iid;
-no unmeasured ESS or confidence interval for Monte Carlo error is reported.
+diagnostics retain independent chain/time axes and estimate finite-run uncertainty.
 Figures require optional matplotlib; all target and reference calculations use
 PyTorch only. The nonlinear two-coefficient model retains a full 2D spatial map.
 """
@@ -21,25 +21,86 @@ from lafa.samplers import ULA, MALA
 
 
 class CountedPotential:
-    def __init__(self,potential):
-        self.potential=potential
-        self.batches=self.chains=0
+    """Count actual callback invocations and independently evaluated rows.
 
-    def __call__(self,x):
-        self.batches+=1
-        self.chains+=math.prod(x.shape[:-1])
-        return self.potential(x)
+    Gradient counts cover callbacks executed with differentiable tensor inputs;
+    they count target gradients requested by these drivers, not FLOPs. Snapshot
+    before postprocessing so reporting cannot contaminate sampling work.
+    """
+    def __init__(self, potential):
+        self.potential = potential
+        self.counts = dict(target_batches=0, target_points=0, gradient_batches=0,
+                           gradient_points=0, hvp_calls=0, prox_batches=0, prox_points=0)
+
+    @property
+    def batches(self): return self.counts['target_batches']
+
+    @property
+    def chains(self): return self.counts['target_points']
+
+    def __call__(self, *args):
+        x = args[-1]
+        points = math.prod(x.shape[:-1])
+        self.counts['target_batches'] += 1
+        self.counts['target_points'] += points
+        if torch.is_grad_enabled() and any(t.requires_grad for t in args if isinstance(t, torch.Tensor)):
+            self.counts['gradient_batches'] += 1
+            self.counts['gradient_points'] += points
+        return self.potential(*args)
+
+    def snapshot(self): return dict(self.counts)
 
 
 def synchronize(device):
-    if device.type=='cuda': torch.cuda.synchronize(device)
+    if device.type == 'cuda': torch.cuda.synchronize(device)
 
 
 def serializable(value):
-    if isinstance(value,torch.Tensor): return value.detach().cpu().tolist()
-    if isinstance(value,dict): return {k:serializable(v) for k,v in value.items()}
-    if isinstance(value,(tuple,list)): return [serializable(v) for v in value]
+    if isinstance(value, torch.Tensor): return serializable(value.detach().cpu().tolist())
+    if isinstance(value, dict): return {k: serializable(v) for k,v in value.items()}
+    if isinstance(value, (tuple,list)): return [serializable(v) for v in value]
+    if isinstance(value, float) and not math.isfinite(value): return None
     return value
+
+
+def strict_report(value):
+    """Strict JSON with per-path explanations for nonfinite/undefined values."""
+    undefined = {}
+    def walk(item, path):
+        if isinstance(item, torch.Tensor): item = item.detach().cpu().tolist()
+        if isinstance(item, dict): return {k: walk(v, f'{path}.{k}') for k,v in item.items()}
+        if isinstance(item, (tuple,list)): return [walk(v, f'{path}[{i}]') for i,v in enumerate(item)]
+        if isinstance(item, float) and not math.isfinite(item):
+            undefined[path] = 'Undefined/nonfinite finite-chain estimate (constant, degenerate, or insufficiently resolved draws); no convergence value is asserted.'
+            return None
+        return item
+    result = walk(value, '$')
+    if undefined: result['undefined_values'] = undefined
+    return result
+
+
+def chain_diagnostics(chains):
+    """Always pass (independent chains, retained draws, dimensions) unchanged."""
+    from lafa.diagnostics import (bulk_effective_sample_size, tail_effective_sample_size,
+        mcse_mean, mcse_quantile, rank_normalized_split_rhat)
+    methods = dict(bulk_ess=bulk_effective_sample_size, tail_ess=tail_effective_sample_size,
+                   mean_mcse=mcse_mean, median_mcse=mcse_quantile,
+                   rank_normalized_split_rhat=rank_normalized_split_rhat)
+    values, reasons = {}, {}
+    for name, method in methods.items():
+        try:
+            values[name] = method(chains)
+            if not torch.isfinite(values[name]).all():
+                reasons[name] = 'Undefined coordinates: constant, degenerate, or unresolved finite-chain diagnostic.'
+        except ValueError as exc:
+            values[name], reasons[name] = None, str(exc)
+    return dict(applicable=True, input_shape=list(chains.shape), values=values,
+                undefined_reasons=reasons,
+                assumptions='Independent stationary chains required; finite-run estimates do not establish stationarity or convergence.')
+
+
+def inapplicable_diagnostics(reason):
+    return dict(applicable=False, input_shape=None, values=None, undefined_reasons=dict(all=reason))
 
 
 def experiment(problem,cls,step_size,args,seed,reference):
@@ -61,14 +122,21 @@ def experiment(problem,cls,step_size,args,seed,reference):
             if (i-args.warmup)%args.record_every==0: samples.append(result.position)
     synchronize(args.device)
     seconds=time.perf_counter()-started
-    samples=torch.cat(samples)
+    work=counted.snapshot()
+    chain_samples=torch.stack(samples,dim=1)
+    diagnostic_started=time.perf_counter()
+    diagnostics=chain_diagnostics(chain_samples)
+    synchronize(args.device)
+    diagnostic_seconds=time.perf_counter()-diagnostic_started
+    samples=chain_samples.reshape(-1,initial.shape[-1])
     mean=samples.mean(0)
     centered=samples-mean
     cov=centered.T@centered/len(samples)
     intervals=torch.quantile(samples,torch.tensor([.025,.975],device=args.device,dtype=args.dtype),dim=0)
     report=dict(seed=seed,algorithm=cls.__name__,step_size=step_size,iterations=args.iterations,warmup=args.warmup,
         chains=args.chains,record_every=args.record_every,retained_states=len(samples),seconds=seconds,
-        gradient_batch_evaluations=counted.batches,gradient_chain_evaluations=counted.chains,
+        work=work,diagnostics=diagnostics,diagnostic_seconds=diagnostic_seconds,
+        gradient_batch_evaluations=work['gradient_batches'],gradient_chain_evaluations=work['gradient_points'],
         gradient_count_semantics='one autodiff evaluation per call; each call contains chains independent gradients',
         sample_mean=mean,sample_covariance=cov,mean_l2_error=torch.linalg.vector_norm(mean-reference.mean),
         covariance_frobenius_error=torch.linalg.matrix_norm(cov-reference.covariance),
@@ -118,7 +186,8 @@ def main(argv=None):
         device=str(args.device),dtype=str(args.dtype),cpu=platform.processor(),platform=platform.platform(),threads=args.threads,
         gpu=torch.cuda.get_device_name(args.device) if args.device.type=='cuda' else None,
         cuda_runtime=torch.version.cuda,cuda_executed=args.device.type=='cuda',
-        notes='Finite-budget experiments; serially correlated stored states. No ESS claim. Mode occupancy uses nearest component.'),
+        timing='seconds measures sampler construction and transitions only; diagnostic_seconds is measured separately; reference and moment postprocessing excluded.',
+        notes='Finite-budget independent-chain diagnostics retain chain/time axes. No convergence guarantee. Mode occupancy uses nearest component.'),
         references=dict(nonlinear_spatial_reduced=dict(mean=q2.mean,covariance=q2.covariance,log_normalizer=q2.log_normalizer,
             bounds=q2.bounds,resolution=q2.resolution,boundary_mass=q2.boundary_mass,
             mean_change_on_doubling=torch.linalg.vector_norm(q2.mean-q.mean),
@@ -135,7 +204,7 @@ def main(argv=None):
                 report['target']=name
                 data['runs'].append(report)
                 if seed==args.seeds[0]: visuals.append((name,cls.__name__,samples))
-    with (args.output/'accuracy.json').open('w') as f: json.dump(serializable(data),f,indent=2,allow_nan=False)
+    with (args.output/'accuracy.json').open('w') as f: json.dump(strict_report(data),f,indent=2,allow_nan=False)
     if not args.no_figures:
         os.environ.setdefault('MPLCONFIGDIR','/tmp/lafa-matplotlib-cache')
         os.environ.setdefault('XDG_CACHE_HOME','/tmp/lafa-cache')

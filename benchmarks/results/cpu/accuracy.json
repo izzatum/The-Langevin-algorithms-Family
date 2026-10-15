@@ -10,7 +10,8 @@
     "gpu": null,
     "cuda_runtime": null,
     "cuda_executed": false,
-    "notes": "Finite-budget experiments; serially correlated stored states. No ESS claim. Mode occupancy uses nearest component."
+    "timing": "seconds measures sampler construction and transitions only; diagnostic_seconds is measured separately; reference and moment postprocessing excluded.",
+    "notes": "Finite-budget independent-chain diagnostics retain chain/time axes. No convergence guarantee. Mode occupancy uses nearest component."
   },
   "references": {
     "nonlinear_spatial_reduced": {
@@ -103,39 +104,81 @@
       "seed": 7,
       "algorithm": "ULA",
       "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.2770597100000032,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.38979145899975265,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            5276.702973591523,
+            5183.953471679187
+          ],
+          "tail_ess": [
+            7028.120438831035,
+            6982.3886826676235
+          ],
+          "mean_mcse": [
+            0.008373973504330017,
+            0.008484407246057363
+          ],
+          "median_mcse": [
+            0.010876763316399946,
+            0.008173530184204025
+          ],
+          "rank_normalized_split_rhat": [
+            1.006922819018082,
+            1.0051958677619528
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.03181418100029987,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.38263002537491936,
-        0.3933601311180911
+        0.39058390614849225,
+        0.39448176834541765
       ],
       "sample_covariance": [
         [
-          0.3747316081758981,
-          -0.14313724405319467
+          0.37003788391058223,
+          -0.13652590296286427
         ],
         [
-          -0.14313724405319467,
-          0.3775363552190526
+          -0.13652590296286427,
+          0.37298839454379107
         ]
       ],
-      "mean_l2_error": 0.018595409103261767,
-      "covariance_frobenius_error": 0.1045541683646028,
+      "mean_l2_error": 0.010913601475108212,
+      "covariance_frobenius_error": 0.09834516702202939,
       "coordinate_central_95_interval": [
         [
-          -0.848670245093834,
-          -0.8004912668503343
+          -0.8007783617836415,
+          -0.8173159140546848
         ],
         [
-          1.5529828951369475,
-          1.6037183632181482
+          1.583704526206239,
+          1.5815145406211908
         ]
       ],
       "acceptance_rate": null,
@@ -145,39 +188,81 @@
       "seed": 19,
       "algorithm": "ULA",
       "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.0954216909999559,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.2000379090000024,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            5361.443154475809,
+            5124.720559592769
+          ],
+          "tail_ess": [
+            6953.696180709873,
+            6990.886354574955
+          ],
+          "mean_mcse": [
+            0.00835751093085967,
+            0.008440529660364198
+          ],
+          "median_mcse": [
+            0.010498888069899875,
+            0.008252136497034546
+          ],
+          "rank_normalized_split_rhat": [
+            1.0034995967571796,
+            1.002765861932886
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.03231142999993608,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.390357671841544,
-        0.3995571846438144
+        0.39575720999855596,
+        0.3998967840520089
       ],
       "sample_covariance": [
         [
-          0.3705426411545008,
-          -0.14234972574205612
+          0.3745582850017816,
+          -0.1398629036490248
         ],
         [
-          -0.14234972574205612,
-          0.3768249529813099
+          -0.1398629036490248,
+          0.3648628794525125
         ]
       ],
-      "mean_l2_error": 0.009651988613123092,
-      "covariance_frobenius_error": 0.10115999978349222,
+      "mean_l2_error": 0.00424353756486726,
+      "covariance_frobenius_error": 0.09574735448522105,
       "coordinate_central_95_interval": [
         [
-          -0.7805020216012305,
-          -0.8190770713788933
+          -0.808923270556782,
+          -0.7865315613484015
         ],
         [
-          1.5559725708950893,
-          1.6112658865616876
+          1.594081823491934,
+          1.5937720041999994
         ]
       ],
       "acceptance_rate": null,
@@ -187,39 +272,81 @@
       "seed": 31,
       "algorithm": "ULA",
       "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.09423677500012673,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.19149479599991537,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            5484.0709996275045,
+            5281.816736836261
+          ],
+          "tail_ess": [
+            6858.580883115044,
+            6981.497454018428
+          ],
+          "mean_mcse": [
+            0.008198868307844104,
+            0.008378449520146101
+          ],
+          "median_mcse": [
+            0.009723317971138262,
+            0.012105317493771361
+          ],
+          "rank_normalized_split_rhat": [
+            1.0055894450037663,
+            1.003804985098667
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.02434106900000188,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.4133424557370834,
-        0.3820416745562312
+        0.39522216815058414,
+        0.40168491967580644
       ],
       "sample_covariance": [
         [
-          0.367580068979873,
-          -0.13841890432916967
+          0.368575461671656,
+          -0.13239015693154557
         ],
         [
-          -0.13841890432916967,
-          0.3738238108897421
+          -0.13239015693154557,
+          0.3706827780259748
         ]
       ],
-      "mean_l2_error": 0.02237286240284333,
-      "covariance_frobenius_error": 0.09709493478179755,
+      "mean_l2_error": 0.005065659639677416,
+      "covariance_frobenius_error": 0.09634830150788404,
       "coordinate_central_95_interval": [
         [
-          -0.7529242743499728,
-          -0.7728249222253779
+          -0.7991005073718709,
+          -0.765207249689217
         ],
         [
-          1.6362424285260468,
-          1.5746177494066749
+          1.5995697221877232,
+          1.6074564086761394
         ]
       ],
       "acceptance_rate": null,
@@ -229,173 +356,341 @@
       "seed": 7,
       "algorithm": "MALA",
       "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.14443640400008917,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.28596611900002245,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            5111.316337411643,
+            5387.494614404568
+          ],
+          "tail_ess": [
+            6509.4483661569,
+            6779.400384678342
+          ],
+          "mean_mcse": [
+            0.007648833876479152,
+            0.007458408155194594
+          ],
+          "median_mcse": [
+            0.007890595652782134,
+            0.009133039974553697
+          ],
+          "rank_normalized_split_rhat": [
+            1.0043447583602196,
+            1.003688268371589
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.026124604999949952,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.3912998870139632,
-        0.412176176657639
+        0.398693147276871,
+        0.3999077950939362
       ],
       "sample_covariance": [
         [
-          0.30328372701099304,
-          -0.14794593183309507
+          0.29888259293178243,
+          -0.14294081349284146
         ],
         [
-          -0.14794593183309507,
-          0.3015774917518611
+          -0.14294081349284146,
+          0.29932092228285256
         ]
       ],
-      "mean_l2_error": 0.014964505224096258,
-      "covariance_frobenius_error": 0.008189570749478315,
+      "mean_l2_error": 0.0013096059831724954,
+      "covariance_frobenius_error": 0.004538815444875123,
       "coordinate_central_95_interval": [
         [
-          -0.6968309004428621,
-          -0.6713169082688599
+          -0.6601306576200404,
+          -0.6668371709694142
         ],
         [
-          1.4310828522996735,
-          1.5047460250204627
+          1.477814802588435,
+          1.4809861787559435
         ]
       ],
-      "acceptance_rate": 0.8823958333333334,
+      "acceptance_rate": 0.88421875,
       "target": "paper_gaussian"
     },
     {
       "seed": 19,
       "algorithm": "MALA",
       "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.1512696119998509,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.3265914309999971,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            5216.300660852106,
+            5121.265099487171
+          ],
+          "tail_ess": [
+            7295.5400428525645,
+            6967.58781416141
+          ],
+          "mean_mcse": [
+            0.007631186414196723,
+            0.007726802944307797
+          ],
+          "median_mcse": [
+            0.009470814330578947,
+            0.008928465115012468
+          ],
+          "rank_normalized_split_rhat": [
+            1.0058583189216737,
+            1.0031202295557151
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.024655662999975902,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.4083163243544839,
-        0.3869614149575232
+        0.41012585205207913,
+        0.3996291077293285
       ],
       "sample_covariance": [
         [
-          0.30226275784589973,
-          -0.1485901439779765
+          0.30400070279261726,
+          -0.14209552337507914
         ],
         [
-          -0.1485901439779765,
-          0.3154613493581204
+          -0.14209552337507914,
+          0.3055771100881942
         ]
       ],
-      "mean_l2_error": 0.01546547126174176,
-      "covariance_frobenius_error": 0.016011993830036413,
+      "mean_l2_error": 0.01013316462850663,
+      "covariance_frobenius_error": 0.0038016096785731613,
       "coordinate_central_95_interval": [
         [
-          -0.6737261972962602,
-          -0.7005422559508532
+          -0.6643291582784986,
+          -0.6866175454779038
         ],
         [
-          1.4857018506094457,
-          1.4929539953298112
+          1.51863289637037,
+          1.4555880982992722
         ]
       ],
-      "acceptance_rate": 0.8822916666666667,
+      "acceptance_rate": 0.8820833333333333,
       "target": "paper_gaussian"
     },
     {
       "seed": 31,
       "algorithm": "MALA",
       "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.1449053390001609,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.28435786699992605,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            5326.579604535701,
+            5407.431631004677
+          ],
+          "tail_ess": [
+            6795.181013673514,
+            6989.6173915280315
+          ],
+          "mean_mcse": [
+            0.007535503832913262,
+            0.007401895625265722
+          ],
+          "median_mcse": [
+            0.009236787674209546,
+            0.008568492477763284
+          ],
+          "rank_normalized_split_rhat": [
+            1.0042008404329312,
+            1.003687999239227
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.024532197000098677,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.40276508763333096,
-        0.39697849250481104
+        0.40092587538265945,
+        0.3952631349613123
       ],
       "sample_covariance": [
         [
-          0.30332879342998514,
-          -0.13358987253898824
+          0.3023139691226554,
+          -0.13671792964856058
         ],
         [
-          -0.13358987253898824,
-          0.2907959458254208
+          -0.13671792964856058,
+          0.29624653668492484
         ]
       ],
-      "mean_l2_error": 0.00409628121938369,
-      "covariance_frobenius_error": 0.016757440178897836,
+      "mean_l2_error": 0.00482683932434206,
+      "covariance_frobenius_error": 0.009813599270565309,
       "coordinate_central_95_interval": [
         [
-          -0.6618675939317188,
-          -0.6687688484535911
+          -0.671634240157895,
+          -0.6801122480535242
         ],
         [
-          1.4703932410129992,
-          1.4360808377707799
+          1.473269723641842,
+          1.4583310243138026
         ]
       ],
-      "acceptance_rate": 0.8755729166666667,
+      "acceptance_rate": 0.879375,
       "target": "paper_gaussian"
     },
     {
       "seed": 7,
       "algorithm": "ULA",
       "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.14041041700011192,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.2661849450000773,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            110.57660844714589,
+            108.65807671386315
+          ],
+          "tail_ess": [
+            1101.6589769107818,
+            2041.833306018191
+          ],
+          "mean_mcse": [
+            0.35097537168581777,
+            0.35776576473102084
+          ],
+          "median_mcse": [
+            0.2592621883851005,
+            1.842071421461482
+          ],
+          "rank_normalized_split_rhat": [
+            1.638716201977368,
+            1.6583322355818766
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.02691078899988497,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.6272227677677831,
-        -0.27292909469113535
+        0.5851754928344638,
+        -0.28517536295253526
       ],
       "sample_covariance": [
         [
-          9.098784444670281,
-          1.2926599179749587
+          9.023981521026741,
+          1.1294307759003468
         ],
         [
-          1.2926599179749587,
-          9.345710465362743
+          1.1294307759003468,
+          9.393868634284113
         ]
       ],
-      "mean_l2_error": 0.6840312062583117,
-      "covariance_frobenius_error": 1.877955939157032,
+      "mean_l2_error": 0.6509649338091629,
+      "covariance_frobenius_error": 1.6700554524369702,
       "coordinate_central_95_interval": [
         [
-          -4.236081034140033,
-          -4.266335516682331
+          -4.16241277179053,
+          -4.273596118440151
         ],
         [
-          4.239707699144827,
-          4.15975926806858
+          4.230463090433547,
+          4.173567337413753
         ]
       ],
       "acceptance_rate": null,
       "nearest_mode_occupancy": [
-        0.24583333730697632,
-        0.14479166269302368,
-        0.296875,
-        0.3125
+        0.2486979216337204,
+        0.15078124403953552,
+        0.29635417461395264,
+        0.30416667461395264
       ],
       "reference_weights": [
         0.25,
@@ -410,46 +705,88 @@
       "seed": 19,
       "algorithm": "ULA",
       "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.14199755900017408,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.2699282110002059,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            108.30506256411822,
+            108.00306442109775
+          ],
+          "tail_ess": [
+            1620.4478661571034,
+            1520.0991647111427
+          ],
+          "mean_mcse": [
+            0.36012223806314486,
+            0.3620043112445181
+          ],
+          "median_mcse": [
+            2.091679726315065,
+            2.107251491104384
+          ],
+          "rank_normalized_split_rhat": [
+            1.6622577851833038,
+            1.6719921848033872
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.029176459000154864,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        -0.02616756571744167,
-        -0.11139346711355559
+        0.053077866905655614,
+        -0.09866271459195695
       ],
       "sample_covariance": [
         [
-          9.611134557071484,
-          -2.5634900625370918
+          9.51299885655764,
+          -2.7466137091120113
         ],
         [
-          -2.5634900625370918,
-          9.523642648855814
+          -2.7466137091120113,
+          9.541618599317761
         ]
       ],
-      "mean_l2_error": 0.11442572268137711,
-      "covariance_frobenius_error": 3.6271024890500736,
+      "mean_l2_error": 0.1120338841864748,
+      "covariance_frobenius_error": 3.884543063507606,
       "coordinate_central_95_interval": [
         [
-          -4.253552748801954,
-          -4.273268143169491
+          -4.220397633870988,
+          -4.252302739397737
         ],
         [
-          4.165596660353935,
-          4.201863642316292
+          4.21408553884841,
+          4.217190839773956
         ]
       ],
       "acceptance_rate": null,
       "nearest_mode_occupancy": [
-        0.18723958730697632,
+        0.17695312201976776,
         0.3125,
-        0.3283854126930237,
+        0.33867186307907104,
         0.171875
       ],
       "reference_weights": [
@@ -465,156 +802,88 @@
       "seed": 31,
       "algorithm": "ULA",
       "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.15314239700001053,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.27464606399962577,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            107.24266015757601,
+            107.65063568927994
+          ],
+          "tail_ess": [
+            1533.4214090930877,
+            1442.9770889051947
+          ],
+          "mean_mcse": [
+            0.3653876067567445,
+            0.36290631974278736
+          ],
+          "median_mcse": [
+            2.115447414324975,
+            2.018900571221378
+          ],
+          "rank_normalized_split_rhat": [
+            1.6773406268100064,
+            1.6709367187432307
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.027084389999799896,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.0859813423402199,
-        0.16565393683028587
+        0.08043416751393624,
+        0.18107418406305556
       ],
       "sample_covariance": [
         [
-          9.682320010706546,
-          -0.4013424293956429
+          9.707631663027165,
+          -0.3045205743366777
         ],
         [
-          -0.4013424293956429,
-          9.82973350115909
+          -0.3045205743366777,
+          9.592514910091255
         ]
       ],
-      "mean_l2_error": 0.18663873664917052,
-      "covariance_frobenius_error": 0.6812607865986856,
+      "mean_l2_error": 0.19813509390756923,
+      "covariance_frobenius_error": 0.4869655803743209,
       "coordinate_central_95_interval": [
         [
-          -4.261700949990863,
-          -4.305412976115294
+          -4.233259035746535,
+          -4.215668818748521
         ],
         [
-          4.241511716189157,
-          4.216668576506591
+          4.261197150300792,
+          4.2497840518135055
         ]
       ],
       "acceptance_rate": null,
       "nearest_mode_occupancy": [
         0.21875,
-        0.26875001192092896,
+        0.265625,
         0.25,
-        0.26249998807907104
-      ],
-      "reference_weights": [
-        0.25,
-        0.25,
-        0.25,
-        0.25
-      ],
-      "visited_modes": 4,
-      "target": "mixture"
-    },
-    {
-      "seed": 7,
-      "algorithm": "MALA",
-      "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
-      "chains": 64,
-      "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.19126124099989283,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
-      "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
-      "sample_mean": [
-        -0.09510416729736013,
-        0.28413089235608946
-      ],
-      "sample_covariance": [
-        [
-          9.455689530142374,
-          1.6776536353301215
-        ],
-        [
-          1.6776536353301215,
-          9.531154893143121
-        ]
-      ],
-      "mean_l2_error": 0.299625043393225,
-      "covariance_frobenius_error": 2.3731787723175235,
-      "coordinate_central_95_interval": [
-        [
-          -4.152138541487624,
-          -4.190143366631865
-        ],
-        [
-          4.114492348064231,
-          4.165263794746265
-        ]
-      ],
-      "acceptance_rate": 0.96890625,
-      "nearest_mode_occupancy": [
-        0.28125,
-        0.23411458730697632,
-        0.171875,
-        0.3127604126930237
-      ],
-      "reference_weights": [
-        0.25,
-        0.25,
-        0.25,
-        0.25
-      ],
-      "visited_modes": 4,
-      "target": "mixture"
-    },
-    {
-      "seed": 19,
-      "algorithm": "MALA",
-      "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
-      "chains": 64,
-      "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.18779068700018797,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
-      "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
-      "sample_mean": [
-        -0.005090106964257002,
-        0.4308175499771271
-      ],
-      "sample_covariance": [
-        [
-          9.549830922139787,
-          -0.906797253673778
-        ],
-        [
-          -0.906797253673778,
-          9.094908071256958
-        ]
-      ],
-      "mean_l2_error": 0.43084761872058897,
-      "covariance_frobenius_error": 1.3457879142252211,
-      "coordinate_central_95_interval": [
-        [
-          -4.22257823860623,
-          -4.087186079316798
-        ],
-        [
-          4.176135337570026,
-          4.175797470545812
-        ]
-      ],
-      "acceptance_rate": 0.9661979166666667,
-      "nearest_mode_occupancy": [
-        0.1875,
-        0.3125,
-        0.234375,
         0.265625
       ],
       "reference_weights": [
@@ -627,45 +896,281 @@
       "target": "mixture"
     },
     {
-      "seed": 31,
+      "seed": 7,
       "algorithm": "MALA",
       "step_size": 0.1,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.19726103300013165,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.3861656099998072,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            107.59617016102895,
+            107.69834625553236
+          ],
+          "tail_ess": [
+            1553.5696652625718,
+            1421.3924639417714
+          ],
+          "mean_mcse": [
+            0.3614850291547123,
+            0.36020169045283745
+          ],
+          "median_mcse": [
+            2.151906551525448,
+            1.926486929790507
+          ],
+          "rank_normalized_split_rhat": [
+            1.6725694539938252,
+            1.67150853778097
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.03772280800012595,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.19100701758648517,
-        -0.3777209898976494
+        -0.0911925899071686,
+        0.27278581420485365
       ],
       "sample_covariance": [
         [
-          9.593294666857513,
-          0.7086170203472515
+          9.44604323583599,
+          1.69938762144593
         ],
         [
-          0.7086170203472515,
-          9.486870060380722
+          1.69938762144593,
+          9.386944134396803
         ]
       ],
-      "mean_l2_error": 0.4232692133578156,
-      "covariance_frobenius_error": 1.0065547442787672,
+      "mean_l2_error": 0.2876250838946109,
+      "covariance_frobenius_error": 2.4065596890569014,
       "coordinate_central_95_interval": [
         [
-          -4.178453566913013,
-          -4.262124717063678
+          -4.1648315265470925,
+          -4.1399447261008415
         ],
         [
-          4.138849831440001,
-          4.096821564115748
+          4.153807215790888,
+          4.155377754247911
         ]
       ],
-      "acceptance_rate": 0.9663020833333333,
+      "acceptance_rate": 0.9682291666666667,
+      "nearest_mode_occupancy": [
+        0.28125,
+        0.234375,
+        0.171875,
+        0.3125
+      ],
+      "reference_weights": [
+        0.25,
+        0.25,
+        0.25,
+        0.25
+      ],
+      "visited_modes": 4,
+      "target": "mixture"
+    },
+    {
+      "seed": 19,
+      "algorithm": "MALA",
+      "step_size": 0.1,
+      "iterations": 600,
+      "warmup": 200,
+      "chains": 64,
+      "record_every": 5,
+      "retained_states": 7680,
+      "seconds": 0.45363274700002876,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            107.41266330897153,
+            110.44946964592785
+          ],
+          "tail_ess": [
+            1545.8960033658918,
+            1157.7777053298366
+          ],
+          "mean_mcse": [
+            0.36322899439848283,
+            0.35391059150196447
+          ],
+          "median_mcse": [
+            2.1680096714404664,
+            0.2794326844830157
+          ],
+          "rank_normalized_split_rhat": [
+            1.6750835109901137,
+            1.6449471705444316
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.03948164599978554,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
+      "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
+      "sample_mean": [
+        0.010244370865110156,
+        0.5085761827953511
+      ],
+      "sample_covariance": [
+        [
+          9.551244647288591,
+          -0.7775519409208813
+        ],
+        [
+          -0.7775519409208813,
+          9.12563139215841
+        ]
+      ],
+      "mean_l2_error": 0.5086793497293873,
+      "covariance_frobenius_error": 1.1627346688185756,
+      "coordinate_central_95_interval": [
+        [
+          -4.155700174815365,
+          -4.096769322725959
+        ],
+        [
+          4.178341656422061,
+          4.194201524811056
+        ]
+      ],
+      "acceptance_rate": 0.9676822916666666,
+      "nearest_mode_occupancy": [
+        0.1875,
+        0.3125,
+        0.22760416567325592,
+        0.2723958194255829
+      ],
+      "reference_weights": [
+        0.25,
+        0.25,
+        0.25,
+        0.25
+      ],
+      "visited_modes": 4,
+      "target": "mixture"
+    },
+    {
+      "seed": 31,
+      "algorithm": "MALA",
+      "step_size": 0.1,
+      "iterations": 600,
+      "warmup": 200,
+      "chains": 64,
+      "record_every": 5,
+      "retained_states": 7680,
+      "seconds": 0.3965792990002228,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            108.27197112550634,
+            108.58659929893128
+          ],
+          "tail_ess": [
+            1437.2966048400363,
+            1161.1000433186541
+          ],
+          "mean_mcse": [
+            0.3628823275190758,
+            0.3603598416109068
+          ],
+          "median_mcse": [
+            2.079854933600359,
+            0.4581187206432936
+          ],
+          "rank_normalized_split_rhat": [
+            1.6679889474919276,
+            1.662405725747543
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.02948261099982119,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
+      "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
+      "sample_mean": [
+        0.1852460767814603,
+        -0.3848853832579598
+      ],
+      "sample_covariance": [
+        [
+          9.530510174522643,
+          0.6373139693779782
+        ],
+        [
+          0.6373139693779782,
+          9.404377963049233
+        ]
+      ],
+      "mean_l2_error": 0.42714501894385853,
+      "covariance_frobenius_error": 0.9068696906549722,
+      "coordinate_central_95_interval": [
+        [
+          -4.155398516774023,
+          -4.214249643099298
+        ],
+        [
+          4.157493705180089,
+          4.123641397623731
+        ]
+      ],
+      "acceptance_rate": 0.9677864583333333,
       "nearest_mode_occupancy": [
         0.28125,
         0.1875,
@@ -685,39 +1190,81 @@
       "seed": 7,
       "algorithm": "ULA",
       "step_size": 0.002,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.09687411300001258,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.1950142059999962,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            104.48179450949395,
+            177.24797586084182
+          ],
+          "tail_ess": [
+            236.63314980313814,
+            281.6079050845857
+          ],
+          "mean_mcse": [
+            0.051473628417712664,
+            0.028707739965649137
+          ],
+          "median_mcse": [
+            0.06395912857421704,
+            0.02688889682979212
+          ],
+          "rank_normalized_split_rhat": [
+            1.7353969677829695,
+            1.3022071267196786
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.02823906999992687,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.014475751132538203,
-        0.19479873833114253
+        0.05849292892402626,
+        0.26721552524023756
       ],
       "sample_covariance": [
         [
-          0.2213301401097551,
-          0.02827742204200858
+          0.27414294631660646,
+          0.038870535245116196
         ],
         [
-          0.02827742204200858,
-          0.11096262086976717
+          0.038870535245116196,
+          0.136652201315757
         ]
       ],
-      "mean_l2_error": 0.3126982649927917,
-      "covariance_frobenius_error": 0.2803351577341875,
+      "mean_l2_error": 0.23331697182428612,
+      "covariance_frobenius_error": 0.23620345261640474,
       "coordinate_central_95_interval": [
         [
-          -0.8049953720305291,
-          -0.35735225646753777
+          -0.8490919646497944,
+          -0.3528799277131792
         ],
         [
-          0.9522069077632902,
-          0.9365667046799729
+          1.0232764163283994,
+          1.102545170541492
         ]
       ],
       "acceptance_rate": null,
@@ -727,39 +1274,81 @@
       "seed": 19,
       "algorithm": "ULA",
       "step_size": 0.002,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.08693925000011404,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.1937069559999145,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            117.47965609929524,
+            185.69020675197274
+          ],
+          "tail_ess": [
+            195.26054687005544,
+            195.89647211527503
+          ],
+          "mean_mcse": [
+            0.047356658120006785,
+            0.030842466608394348
+          ],
+          "median_mcse": [
+            0.0579828639202032,
+            0.02182030175161552
+          ],
+          "rank_normalized_split_rhat": [
+            1.5723424956921022,
+            1.2746077822291124
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.027862382999956026,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.04333503654589266,
-        0.22193123089095348
+        0.09694858580467258,
+        0.26000054862508726
       ],
       "sample_covariance": [
         [
-          0.2367857693670415,
-          0.035205660050760555
+          0.2589475922565614,
+          0.06750432969338235
         ],
         [
-          0.035205660050760555,
-          0.11060121298036413
+          0.06750432969338235,
+          0.14606888275700722
         ]
       ],
-      "mean_l2_error": 0.2731177894143483,
-      "covariance_frobenius_error": 0.2674550217388987,
+      "mean_l2_error": 0.20775411929395374,
+      "covariance_frobenius_error": 0.2056007978534166,
       "coordinate_central_95_interval": [
         [
-          -0.7949144383173345,
-          -0.34676647726179555
+          -0.7924868803157142,
+          -0.3236344507994293
         ],
         [
-          0.9664336198200424,
-          0.9950691389952534
+          1.093410249463759,
+          1.2253346583066977
         ]
       ],
       "acceptance_rate": null,
@@ -769,39 +1358,81 @@
       "seed": 31,
       "algorithm": "ULA",
       "step_size": 0.002,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.09408982699983426,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.18609174899984282,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            98.16584482125175,
+            144.3629139698994
+          ],
+          "tail_ess": [
+            164.8635246220032,
+            145.99256624654748
+          ],
+          "mean_mcse": [
+            0.05487788485732484,
+            0.03853085796387404
+          ],
+          "median_mcse": [
+            0.06836875255553602,
+            0.03104097440865107
+          ],
+          "rank_normalized_split_rhat": [
+            1.846744555695535,
+            1.4045560472835912
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.02769389000013689,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.09815339776093487,
-        0.23640172549536215
+        0.10207549370133716,
+        0.2911627521468309
       ],
       "sample_covariance": [
         [
-          0.2514774260618219,
-          0.05492272438445863
+          0.2913083403440254,
+          0.08951906944697649
         ],
         [
-          0.05492272438445863,
-          0.1375171322571204
+          0.08951906944697649,
+          0.17943244950577317
         ]
       ],
-      "mean_l2_error": 0.22356668727229936,
-      "covariance_frobenius_error": 0.22611916773309226,
+      "mean_l2_error": 0.18393997466300138,
+      "covariance_frobenius_error": 0.15186033593184775,
       "coordinate_central_95_interval": [
         [
-          -0.7814983609497518,
-          -0.3477088860411525
+          -0.8194263752166819,
+          -0.33488039929666813
         ],
         [
-          1.0414840814421056,
-          1.081514423063798
+          1.137760718936179,
+          1.343764189742311
         ]
       ],
       "acceptance_rate": null,
@@ -811,219 +1442,387 @@
       "seed": 7,
       "algorithm": "MALA",
       "step_size": 0.002,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.1679087410000193,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.2954211739997845,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            105.51297225820518,
+            142.66326830855752
+          ],
+          "tail_ess": [
+            155.35638212465568,
+            137.45393505124545
+          ],
+          "mean_mcse": [
+            0.05214660407433092,
+            0.03689111624600413
+          ],
+          "median_mcse": [
+            0.07074692328226309,
+            0.028228261658138853
+          ],
+          "rank_normalized_split_rhat": [
+            1.720907540304713,
+            1.4107403950893713
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.042255066000052466,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        -0.005931166512656175,
-        0.209556718125573
+        0.10777906663508188,
+        0.2825244996816563
       ],
       "sample_covariance": [
         [
-          0.22403691625010339,
-          0.005883388383453583
+          0.28234946465450506,
+          0.08619445589416287
         ],
         [
-          0.005883388383453583,
-          0.11476260165589346
+          0.08619445589416287,
+          0.16870640662605477
         ]
       ],
-      "mean_l2_error": 0.31930540880309793,
-      "covariance_frobenius_error": 0.3006247688824717,
+      "mean_l2_error": 0.184776745133084,
+      "covariance_frobenius_error": 0.16468377875630655,
       "coordinate_central_95_interval": [
         [
-          -0.8427373400821534,
-          -0.36524148156509634
+          -0.7970854989165115,
+          -0.3476708592439681
         ],
         [
-          0.935304739205654,
-          0.9959640508728952
+          1.1216292508885277,
+          1.2703959888676628
         ]
       ],
-      "acceptance_rate": 0.9934375,
+      "acceptance_rate": 0.991796875,
       "target": "paper_rosenbrock"
     },
     {
       "seed": 19,
       "algorithm": "MALA",
       "step_size": 0.002,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.18626098000004276,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.2929041990000769,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            107.85365664555341,
+            164.61429603253924
+          ],
+          "tail_ess": [
+            160.07323612811294,
+            211.27704620349738
+          ],
+          "mean_mcse": [
+            0.05017250632857182,
+            0.03394171884281385
+          ],
+          "median_mcse": [
+            0.05848672136065401,
+            0.02630903593235498
+          ],
+          "rank_normalized_split_rhat": [
+            1.6818746674813196,
+            1.3284228941509282
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.027952739999818732,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.033473227998920954,
-        0.17426001412341655
+        0.11614515098650001,
+        0.276871652383972
       ],
       "sample_covariance": [
         [
-          0.20590854001360936,
-          0.008022850557116063
+          0.2739537546784041,
+          0.059975707530036185
         ],
         [
-          0.008022850557116063,
-          0.131253559846093
+          0.059975707530036185,
+          0.1608119539564826
         ]
       ],
-      "mean_l2_error": 0.3131508444091241,
-      "covariance_frobenius_error": 0.29764413144521445,
+      "mean_l2_error": 0.18220427797542016,
+      "covariance_frobenius_error": 0.19962405200300568,
       "coordinate_central_95_interval": [
         [
-          -0.8263718395471472,
-          -0.4011504602540097
+          -0.8483380923827584,
+          -0.32382783551267086
         ],
         [
-          0.9026378680668852,
-          1.0892035902906194
+          1.1062888871793908,
+          1.2742999717571009
         ]
       ],
-      "acceptance_rate": 0.9936979166666666,
+      "acceptance_rate": 0.99203125,
       "target": "paper_rosenbrock"
     },
     {
       "seed": 31,
       "algorithm": "MALA",
       "step_size": 0.002,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.16135993500006407,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.27492155700019794,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            96.69147444758599,
+            134.8312669527162
+          ],
+          "tail_ess": [
+            163.55338352737596,
+            154.02174815222997
+          ],
+          "mean_mcse": [
+            0.05673433299445274,
+            0.0414214144605058
+          ],
+          "median_mcse": [
+            0.06994161716463022,
+            0.03344237881626405
+          ],
+          "rank_normalized_split_rhat": [
+            1.8744795078653032,
+            1.445126217156161
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.027529903999948147,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.14429520283268618,
-        0.24447492557700015
+        0.17269757432583302,
+        0.3308063179715333
       ],
       "sample_covariance": [
         [
-          0.23916105679086475,
-          0.06336671481626478
+          0.31089064475009814,
+          0.09434432305537703
         ],
         [
-          0.06336671481626478,
-          0.14322824299951023
+          0.09434432305537703,
+          0.20300248323164374
         ]
       ],
-      "mean_l2_error": 0.18845140757271603,
-      "covariance_frobenius_error": 0.21958756340218005,
+      "mean_l2_error": 0.10407380995398018,
+      "covariance_frobenius_error": 0.12807537649679054,
       "coordinate_central_95_interval": [
         [
-          -0.7701468719261839,
-          -0.35082750950856095
+          -0.8762343368311862,
+          -0.33465162748321603
         ],
         [
-          1.0675180272914864,
-          1.2049501439473413
+          1.1453592796650915,
+          1.444516550034004
         ]
       ],
-      "acceptance_rate": 0.9928645833333334,
+      "acceptance_rate": 0.99046875,
       "target": "paper_rosenbrock"
     },
     {
       "seed": 7,
       "algorithm": "ULA",
       "step_size": 0.003,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.1695418219999283,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.32319195899981423,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            4857.745913555854,
+            2174.209237716066
+          ],
+          "tail_ess": [
+            7382.058882135521,
+            3869.9761049553003
+          ],
+          "mean_mcse": [
+            0.0012915503985194896,
+            0.0036849691991104974
+          ],
+          "median_mcse": [
+            0.0014152566614750728,
+            0.00364015846096849
+          ],
+          "rank_normalized_split_rhat": [
+            1.0092541748838935,
+            1.0214379318205948
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.027745207999942068,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.7626967927724256,
-        -0.6332554436451081
+        0.7638463183148162,
+        -0.6319849865094816
       ],
       "sample_covariance": [
         [
-          0.008397858531912711,
-          -0.007069355810354611
+          0.00810094594171942,
+          -0.006823373211488427
         ],
         [
-          -0.007069355810354611,
-          0.029273411916012636
+          -0.006823373211488427,
+          0.029139293853292902
         ]
       ],
-      "mean_l2_error": 0.004524653289175578,
-      "covariance_frobenius_error": 0.004426931081372371,
+      "mean_l2_error": 0.002838829502676162,
+      "covariance_frobenius_error": 0.004095093715179402,
       "coordinate_central_95_interval": [
         [
-          0.5822294074148886,
-          -0.9692374473863605
+          0.5891554151756561,
+          -0.9742710297856767
         ],
         [
-          0.9398015600103623,
-          -0.30147527249935874
+          0.9383140721905429,
+          -0.31555805618666677
         ]
       ],
       "acceptance_rate": null,
       "spatial_truth_coverage": 1.0,
       "spatial_field_mean": [
         [
-          0.6412479690182441,
-          0.7168184330239644,
-          0.5853487570964936,
-          0.5494215465699807
+          0.6415883031999793,
+          0.7174640919443748,
+          0.5854757168941361,
+          0.5494220868275551
         ],
         [
-          0.8395111258160346,
-          1.121662161661444,
-          0.5861038358133901,
-          0.5145277148384769
+          0.8406979775272815,
+          1.124216352667065,
+          0.5860894115225331,
+          0.5143337108973918
         ],
         [
-          0.648686484932495,
-          0.6771834084938582,
-          0.34250304251478797,
-          0.3933111023687457
+          0.6490544795297775,
+          0.677548302470252,
+          0.3415736968209921,
+          0.3925842494261821
         ],
         [
-          0.5539204082276223,
-          0.5401009872783454,
-          0.4386858058627334,
-          0.4769782264100712
+          0.5539376519076725,
+          0.5400327092017267,
+          0.438135127116762,
+          0.4766034137484246
         ]
       ],
       "spatial_field_std": [
         [
-          0.011976023381601576,
-          0.022945361937207497,
-          0.004538348280932157,
-          0.00018676803957535837
+          0.011738134533841356,
+          0.022502881002583717,
+          0.0044434079691404406,
+          0.00018718905541503867
         ],
         [
-          0.04271728890679734,
-          0.09588182789412641,
-          0.016996260486847638,
-          0.0097228076618168
+          0.04192952742662294,
+          0.09422465606406491,
+          0.017085582330218136,
+          0.009802328693280394
         ],
         [
-          0.013011002330679066,
-          0.021270464114050838,
-          0.04987616932254016,
-          0.035990150219276075
+          0.01275189223347795,
+          0.020994599818081796,
+          0.049998599158855656,
+          0.036134039983966845
         ],
         [
-          0.000618670705245648,
-          0.004380562030460426,
-          0.027115263467238727,
-          0.018164482083024885
+          0.0006054544769279367,
+          0.004427890663357992,
+          0.027264225309853226,
+          0.01828347321990975
         ]
       ],
       "target": "nonlinear_spatial_reduced"
@@ -1032,93 +1831,135 @@
       "seed": 19,
       "algorithm": "ULA",
       "step_size": 0.003,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.16399490100002367,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.33136963900005867,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            4992.189002021467,
+            2313.418981361254
+          ],
+          "tail_ess": [
+            6756.382301197824,
+            4381.5095733612825
+          ],
+          "mean_mcse": [
+            0.0012776455553499882,
+            0.0034891332069094077
+          ],
+          "median_mcse": [
+            0.0014959431940496648,
+            0.004178890473351793
+          ],
+          "rank_normalized_split_rhat": [
+            1.0046829102826245,
+            1.016850623689781
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.030710692999946332,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.7647729485936753,
-        -0.6327919849885199
+        0.7642912000104547,
+        -0.6300016921085789
       ],
       "sample_covariance": [
         [
-          0.008002790326241278,
-          -0.006863450628464094
+          0.00815320013043471,
+          -0.006701577239676985
         ],
         [
-          -0.006863450628464094,
-          0.02955850974047556
+          -0.006701577239676985,
+          0.028070190267597335
         ]
       ],
-      "mean_l2_error": 0.0028053475804912047,
-      "covariance_frobenius_error": 0.0043288831810772204,
+      "mean_l2_error": 0.0019189541950285262,
+      "covariance_frobenius_error": 0.003495261531707454,
       "coordinate_central_95_interval": [
         [
-          0.5893231665352278,
-          -0.9890907055283902
+          0.5855205281580785,
+          -0.967797956426932
         ],
         [
-          0.936248611147654,
-          -0.3052387545955598
+          0.9399564717344235,
+          -0.31281429992337473
         ]
       ],
       "acceptance_rate": null,
       "spatial_truth_coverage": 1.0,
       "spatial_field_mean": [
         [
-          0.6415141962397503,
-          0.7173222620903325,
-          0.585454857238125,
-          0.5494256747413835
+          0.6416626011141707,
+          0.7176054897316075,
+          0.5855177118796389,
+          0.5494302102241182
         ],
         [
-          0.8404298708539226,
-          1.1237060143443116,
-          0.586444408679819,
-          0.5145646916260661
+          0.8409502229419231,
+          1.1249538227271245,
+          0.5868333094276204,
+          0.5146920871242053
         ],
         [
-          0.6489774534413146,
-          0.6777428359029362,
-          0.34272591444801187,
-          0.39342086496957157
+          0.649141823371866,
+          0.678223984559199,
+          0.3431340751791591,
+          0.39375648568752447
         ],
         [
-          0.5539351326256021,
-          0.540138548694893,
-          0.4387705150193933,
-          0.47703044176150583
+          0.5539439864806835,
+          0.5402132096059011,
+          0.43905916835084485,
+          0.4772396616730667
         ]
       ],
       "spatial_field_std": [
         [
-          0.011698222717780137,
-          0.022421855777929777,
-          0.004429374596167135,
-          0.00018670667076136455
+          0.011605133183853623,
+          0.02225794124698369,
+          0.004401090094928901,
+          0.0001823454088151167
         ],
         [
-          0.04176528957020892,
-          0.09379062059515418,
-          0.017026006792419522,
-          0.009763811109423896
+          0.04149327326493064,
+          0.09347828562468677,
+          0.016576037200079236,
+          0.009331013232111609
         ],
         [
-          0.012708438118056397,
-          0.020928246573702295,
-          0.049719098738999754,
-          0.03595500905922544
+          0.012612919631380502,
+          0.020866588092946895,
+          0.04791810925976886,
+          0.0345317110948367
         ],
         [
-          0.0006036190429347462,
-          0.004412074995366218,
-          0.02713938909252281,
-          0.01820593575516221
+          0.0005999462567668615,
+          0.004218601511413326,
+          0.02601622916993824,
+          0.017423962496709383
         ]
       ],
       "target": "nonlinear_spatial_reduced"
@@ -1127,93 +1968,135 @@
       "seed": 31,
       "algorithm": "ULA",
       "step_size": 0.003,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.16426508099993953,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.33640958200021487,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            4916.817294315772,
+            2285.0650384279534
+          ],
+          "tail_ess": [
+            6508.358128927868,
+            3809.812469702333
+          ],
+          "mean_mcse": [
+            0.0012700973811870717,
+            0.0035524865199364547
+          ],
+          "median_mcse": [
+            0.0014403861615520652,
+            0.0036164532126714
+          ],
+          "rank_normalized_split_rhat": [
+            1.0076808939188735,
+            1.0196021165119797
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.027385956000216538,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.7666202837652971,
-        -0.6361165886175715
+        0.7641301473702804,
+        -0.6310934204583004
       ],
       "sample_covariance": [
         [
-          0.007924395458042884,
-          -0.0066542182486848895
+          0.007924452411580478,
+          -0.006419602853715514
         ],
         [
-          -0.0066542182486848895,
-          0.029460923582300277
+          -0.006419602853715514,
+          0.02861431076593316
         ]
       ],
-      "mean_l2_error": 0.0057710793448373454,
-      "covariance_frobenius_error": 0.0042024810981302506,
+      "mean_l2_error": 0.002172359045697052,
+      "covariance_frobenius_error": 0.0036435326601617843,
       "coordinate_central_95_interval": [
         [
-          0.5939715116877805,
-          -0.9789971814740424
+          0.586717730545433,
+          -0.9584627599607228
         ],
         [
-          0.9431129007764164,
-          -0.3150840484387385
+          0.9387865883380053,
+          -0.3131075105918589
         ]
       ],
       "acceptance_rate": null,
       "spatial_truth_coverage": 1.0,
       "spatial_field_mean": [
         [
-          0.6417548184168572,
-          0.7177816780814965,
-          0.585542572638093,
-          0.5494251332734219
+          0.6416115707013221,
+          0.7175047864323766,
+          0.5854885553429354,
+          0.5494241139040201
         ],
         [
-          0.8412831226322166,
-          1.1255615823692717,
-          0.5863480245671012,
-          0.5143802361508564
+          0.840761181547639,
+          1.1243686004313171,
+          0.5862744392906415,
+          0.5144154516243422
         ],
         [
-          0.6492370715520485,
-          0.6779390746494957,
-          0.3417939332742115,
-          0.39271910577304775
+          0.6490812352259849,
+          0.6777262567063033,
+          0.3418436827018565,
+          0.3928081656385695
         ],
         [
-          0.5539469302313862,
-          0.5400677979709274,
-          0.4382436529072562,
-          0.47667630331134975
+          0.5539395920540807,
+          0.540075583141925,
+          0.4383256876416684,
+          0.47674169652302295
         ]
       ],
       "spatial_field_std": [
         [
-          0.011650231190773809,
-          0.022343162442356256,
-          0.004412372056762492,
-          0.0001879360914486881
+          0.011556581623278916,
+          0.022154816987692998,
+          0.0043853826849074165,
+          0.00018662267772202396
         ],
         [
-          0.04165152572256416,
-          0.09371129087795119,
-          0.017159687941627626,
-          0.0097544814939633
+          0.0412728240094136,
+          0.09286946193430524,
+          0.01701859448244577,
+          0.009540057138979059
         ],
         [
-          0.012658590215789028,
-          0.02103152458554315,
-          0.049747157698347574,
-          0.03591687068743674
+          0.012559885177443839,
+          0.021044185790955537,
+          0.04904461785614617,
+          0.03528592432039858
         ],
         [
-          0.0006012877235192252,
-          0.004418853783610928,
-          0.027108559562325933,
-          0.01818037486189936
+          0.0005980141655511225,
+          0.004328596818481062,
+          0.026584297336657604,
+          0.01779937496976387
         ]
       ],
       "target": "nonlinear_spatial_reduced"
@@ -1222,93 +2105,135 @@
       "seed": 7,
       "algorithm": "MALA",
       "step_size": 0.003,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.20605116100000487,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.49616364400026214,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            3309.9226782951464,
+            1812.2274713322702
+          ],
+          "tail_ess": [
+            6317.252547597397,
+            3275.2318395564944
+          ],
+          "mean_mcse": [
+            0.00123948487932523,
+            0.003876393668489512
+          ],
+          "median_mcse": [
+            0.0013349547394608807,
+            0.004068740946316207
+          ],
+          "rank_normalized_split_rhat": [
+            1.0106240581604726,
+            1.0265693460810978
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.026029735000065557,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.7663299674062329,
-        -0.6294004550854865
+        0.7671703284671103,
+        -0.6341562158146696
       ],
       "sample_covariance": [
         [
-          0.005124406278946214,
-          -0.00705587355238385
+          0.005092270018115295,
+          -0.006911526261360249
         ],
         [
-          -0.00705587355238385,
-          0.02724143994581225
+          -0.006911526261360249,
+          0.026787035553682552
         ]
       ],
-      "mean_l2_error": 0.0009744452063765152,
-      "covariance_frobenius_error": 0.0010102323156238866,
+      "mean_l2_error": 0.003921743746627808,
+      "covariance_frobenius_error": 0.0005133166661960259,
       "coordinate_central_95_interval": [
         [
-          0.623735066477722,
-          -0.9814766210461453
+          0.6221841580469651,
+          -0.9732927268131444
         ],
         [
-          0.901166883574649,
-          -0.32613046669732676
+          0.9018929578044576,
+          -0.3316190381189006
         ]
       ],
-      "acceptance_rate": 0.7969270833333333,
+      "acceptance_rate": 0.7984635416666667,
       "spatial_truth_coverage": 1.0,
       "spatial_field_mean": [
         [
-          0.6416794698299539,
-          0.7175877207456772,
-          0.5855345785248944,
-          0.5494321928878751
+          0.6417019935706095,
+          0.717626149872646,
+          0.5855345470321153,
+          0.5494271009267547
         ],
         [
-          0.8407839278045471,
-          1.1239926140304206,
-          0.5869511365868956,
-          0.5147602818295847
+          0.8408486842656642,
+          1.1239750333387075,
+          0.5864536663668365,
+          0.5144786946835549
         ],
         [
-          0.6491580093327187,
-          0.6782696083043513,
-          0.343472999422289,
-          0.39400578392002
+          0.6491777323824344,
+          0.6779096060548295,
+          0.34188846077706425,
+          0.3929200531129974
         ],
         [
-          0.5539471311087022,
-          0.540249085150348,
-          0.4392469076663747,
-          0.4773636544400893
+          0.5539467676620069,
+          0.5401168008382328,
+          0.43844458170422795,
+          0.47683717575844997
         ]
       ],
       "spatial_field_std": [
         [
-          0.009356913219468823,
-          0.017914796719219153,
-          0.0034725056609963938,
-          0.00014991697757501372
+          0.00919410876958919,
+          0.017603414895053827,
+          0.0034148875463124637,
+          0.0001470515990166708
         ],
         [
-          0.03336028309538383,
-          0.07372949422540419,
-          0.014212052687009822,
-          0.009347959097324787
+          0.03277911407080145,
+          0.0724734800953374,
+          0.0139205623901151,
+          0.009120226817468496
         ],
         [
-          0.010127821341700606,
-          0.014997930101501378,
-          0.04744665749814209,
-          0.03445509832428213
+          0.009953006169272409,
+          0.014789532956306202,
+          0.04629021073118556,
+          0.03362075280648999
         ],
         [
-          0.0004702783476136969,
-          0.004141390702340535,
-          0.026014421364812728,
-          0.0174651120607815
+          0.00046260211056605485,
+          0.004041772313056311,
+          0.0253847898636792,
+          0.01704096862149771
         ]
       ],
       "target": "nonlinear_spatial_reduced"
@@ -1317,93 +2242,135 @@
       "seed": 19,
       "algorithm": "MALA",
       "step_size": 0.003,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.2173622450000039,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.4456398560000707,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            3507.0901546737355,
+            1878.0025275927699
+          ],
+          "tail_ess": [
+            5813.165589966261,
+            2851.7596274828707
+          ],
+          "mean_mcse": [
+            0.0012034579585748306,
+            0.0037794547666754608
+          ],
+          "median_mcse": [
+            0.0013708373586374112,
+            0.003408968685819691
+          ],
+          "rank_normalized_split_rhat": [
+            1.0096194520932775,
+            1.0246755676149186
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.0271174230001634,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.7699641395185359,
-        -0.6428125982987295
+        0.7670953604027345,
+        -0.6322653042823891
       ],
       "sample_covariance": [
         [
-          0.005201019176381482,
-          -0.0073095667733732534
+          0.005077973623721503,
+          -0.006718581226757929
         ],
         [
-          -0.0073095667733732534,
-          0.028799400459834607
+          -0.006718581226757929,
+          0.026579460901737816
         ]
       ],
-      "mean_l2_error": 0.01301353586695707,
-      "covariance_frobenius_error": 0.0025944293784521347,
+      "mean_l2_error": 0.0021131781560881535,
+      "covariance_frobenius_error": 0.0002529362598529254,
       "coordinate_central_95_interval": [
         [
-          0.6230949700961632,
-          -0.9877109900376204
+          0.6237403372081269,
+          -0.971539745748161
         ],
         [
-          0.9113737317880949,
-          -0.3329910428197827
+          0.9029449177869995,
+          -0.3287000141331272
         ]
       ],
-      "acceptance_rate": 0.7896354166666667,
+      "acceptance_rate": 0.79203125,
       "spatial_truth_coverage": 1.0,
       "spatial_field_mean": [
         [
-          0.6421560572614531,
-          0.7184996340273808,
-          0.5856941124421944,
-          0.5494233769131537
+          0.6417636518277009,
+          0.717747834832583,
+          0.5855572696759629,
+          0.549427449834975
         ],
         [
-          0.8424910860943725,
-          1.1275393470303827,
-          0.5860260066610036,
-          0.5140050435184152
+          0.8410846028635313,
+          1.124541461562785,
+          0.5864856678592671,
+          0.5144623022035348
         ],
         [
-          0.6496655901483553,
-          0.6780763592645566,
-          0.33978234964735354,
-          0.3912727256080005
+          0.6492449094619527,
+          0.6780023343083671,
+          0.3419515502295319,
+          0.39291175857254734
         ],
         [
-          0.5539679271827647,
-          0.5399195769667923,
-          0.4371659352510216,
-          0.4759574651405229
+          0.5539498124738556,
+          0.5401121387036834,
+          0.4384208610533289,
+          0.4768111357058066
         ]
       ],
       "spatial_field_std": [
         [
-          0.009438311348341747,
-          0.01808592884578006,
-          0.0034963994403274168,
-          0.00015392884229788
+          0.009370921602183516,
+          0.017946271061783096,
+          0.003481833503880609,
+          0.00015179575332279892
         ],
         [
-          0.03372229441093562,
-          0.07462275320506487,
-          0.014606985792982849,
-          0.009605370432842783
+          0.03342779388472364,
+          0.07397863634895956,
+          0.01436254372851626,
+          0.00934751354064948
         ],
         [
-          0.010214666370117349,
-          0.015161901832898872,
-          0.0483998422994374,
-          0.03523755431408767
+          0.010145529140261284,
+          0.015218858517045379,
+          0.04753001596218013,
+          0.03448323023661853
         ],
         [
-          0.00047318801932590067,
-          0.004264527457639082,
-          0.026654860576331558,
-          0.017918620109873665
+          0.0004717174369437929,
+          0.004149614253660796,
+          0.026027661135257705,
+          0.01746485492542356
         ]
       ],
       "target": "nonlinear_spatial_reduced"
@@ -1412,93 +2379,135 @@
       "seed": 31,
       "algorithm": "MALA",
       "step_size": 0.003,
-      "iterations": 300,
-      "warmup": 100,
+      "iterations": 600,
+      "warmup": 200,
       "chains": 64,
       "record_every": 5,
-      "retained_states": 3840,
-      "seconds": 0.2088109500000428,
-      "gradient_batch_evaluations": 401,
-      "gradient_chain_evaluations": 25664,
+      "retained_states": 7680,
+      "seconds": 0.4292223859997648,
+      "work": {
+        "target_batches": 801,
+        "target_points": 51264,
+        "gradient_batches": 801,
+        "gradient_points": 51264,
+        "hvp_calls": 0,
+        "prox_batches": 0,
+        "prox_points": 0
+      },
+      "diagnostics": {
+        "applicable": true,
+        "input_shape": [
+          64,
+          120,
+          2
+        ],
+        "values": {
+          "bulk_ess": [
+            3672.2881744237384,
+            1478.8149898833312
+          ],
+          "tail_ess": [
+            6221.73073526482,
+            3902.5349100672893
+          ],
+          "mean_mcse": [
+            0.0011860920833411015,
+            0.0041684391464191
+          ],
+          "median_mcse": [
+            0.0012520806359534453,
+            0.004176634882339936
+          ],
+          "rank_normalized_split_rhat": [
+            1.0128732830157647,
+            1.0342117648941527
+          ]
+        },
+        "undefined_reasons": {},
+        "assumptions": "Independent stationary chains required; finite-run estimates do not establish stationarity or convergence."
+      },
+      "diagnostic_seconds": 0.029679149000003235,
+      "gradient_batch_evaluations": 801,
+      "gradient_chain_evaluations": 51264,
       "gradient_count_semantics": "one autodiff evaluation per call; each call contains chains independent gradients",
       "sample_mean": [
-        0.766834017883108,
-        -0.6317252530366363
+        0.7668188878012127,
+        -0.6314341807824846
       ],
       "sample_covariance": [
         [
-          0.005125351109242311,
-          -0.00662671964759202
+          0.00516496699935712,
+          -0.006683607970158674
         ],
         [
-          -0.00662671964759202,
-          0.025792115355671736
+          -0.006683607970158674,
+          0.026165712512192504
         ]
       ],
-      "mean_l2_error": 0.0015132155645440023,
-      "covariance_frobenius_error": 0.0005654201965244129,
+      "mean_l2_error": 0.0012496491978940493,
+      "covariance_frobenius_error": 0.00019254757041539455,
       "coordinate_central_95_interval": [
         [
-          0.6265743877430417,
-          -0.9661716750137931
+          0.6212838559563995,
+          -0.9647969295580237
         ],
         [
-          0.9022968057791283,
-          -0.3380277561854508
+          0.9034252703904965,
+          -0.3329659755718781
         ]
       ],
-      "acceptance_rate": 0.7871875,
+      "acceptance_rate": 0.7934635416666667,
       "spatial_truth_coverage": 1.0,
       "spatial_field_mean": [
         [
-          0.6417454290624571,
-          0.7177136563717352,
-          0.5855558459094112,
-          0.5494304458155547
+          0.6417820930779132,
+          0.7177851135712306,
+          0.585563107317431,
+          0.5494270800674501
         ],
         [
-          0.8410194324732364,
-          1.1244794110830443,
-          0.5867681743604318,
-          0.514623416839493
+          0.8411595364220352,
+          1.124723026158328,
+          0.5864460936319057,
+          0.514431173273218
         ],
         [
-          0.6492278840800639,
-          0.6782093884171261,
-          0.34262742614787894,
-          0.3934372531329985
+          0.6492646799170274,
+          0.6779958078843632,
+          0.34176778992117957,
+          0.3927843159686937
         ],
         [
-          0.5539498532169187,
-          0.5401895324319833,
-          0.438837196628849,
-          0.4770995874915554
+          0.5539505408300169,
+          0.5400987526892173,
+          0.43832789995616633,
+          0.4767509898186382
         ]
       ],
       "spatial_field_std": [
         [
-          0.00936131473713498,
-          0.017930005684765715,
-          0.003484997114982517,
-          0.00014938415452479825
+          0.00947277306655829,
+          0.01814056743333301,
+          0.003524854356598023,
+          0.00015172014702964564
         ],
         [
-          0.033398688534431835,
-          0.07404319859083715,
-          0.014086931867571269,
-          0.009102173271374442
+          0.03378439779097021,
+          0.0748460033788475,
+          0.014335872323783439,
+          0.009288344865918546
         ],
         [
-          0.010138878799650962,
-          0.015280945490017158,
-          0.04625661598298243,
-          0.033576312448534096
+          0.010258413438545591,
+          0.015434131551073012,
+          0.04757003545214858,
+          0.0344127993370191
         ],
         [
-          0.00047240154057280864,
-          0.00403973303206841,
-          0.025344907702735182,
-          0.017008912054509297
+          0.0004777466730390242,
+          0.0041194058817979875,
+          0.02592982483160166,
+          0.0173762852457528
         ]
       ],
       "target": "nonlinear_spatial_reduced"
