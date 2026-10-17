@@ -1,8 +1,8 @@
 # Maintaining search and AI discoverability
 
-The configured documentation URL is
+The public documentation is at
 <https://izzatum.github.io/The-Langevin-algorithms-Family/>.
-It becomes available after the owner enables Pages and a deployment succeeds.
+GitHub Pages deployment was verified on 2026-10-17 after the owner enabled it.
 The repository and documentation serve different needs: GitHub hosts the code,
 while the site exposes explanations, equations, citations and executed tutorial
 outputs as ordinary HTML. Neither publication nor a sitemap submission proves
@@ -40,13 +40,11 @@ ula mala svgd stein-variational-inference kernel-stein-discrepancy
 replica-exchange bayesian-neural-networks scientific-computing python
 ```
 
-After a successful deployment, set the About website to the configured URL.
-Until then, README and package/citation links point to working GitHub documents.
-Once the site is live, update those documentation links to the site and its
-`langevin-algorithms/` guide. The site templates already use the final canonical
-URLs. Repository administration permission is required to change About settings;
-the integration used for the October 2026 update could push code but received
-HTTP 403 for these settings and for enabling Pages.
+Set the About website to the public documentation URL. README, package and
+citation links now point to the live site; its templates use the same canonical
+URLs. Repository administration permission is required to change About settings.
+The integration used for this update can push code and deploy enabled Pages,
+but About edits still return HTTP 403; the owner must apply those settings.
 
 In repository **Settings → Pages**, select **GitHub Actions** as the publishing
 source. `.github/workflows/docs.yml` validates pull requests and deploys `main`.
@@ -92,8 +90,13 @@ The project path cannot set origin-wide crawler rules: a robots file only applie
 at `https://izzatum.github.io/robots.txt`. A file under this project's path would
 not control crawling. No blocking robots directive or `noindex` is added to
 public content. Google does not require `llms.txt` or special AI markup.
-IndexNow is an optional Bing notification protocol; its receipt would not prove
-indexing and would not submit pages to Google.
+The site also supplies a public [IndexNow ownership file](https://izzatum.github.io/The-Langevin-algorithms-Family/29313ffdf7d22db2fc472f7fa744bf8a.txt). This project-scoped
+key allows notification of the published sitemap URLs through IndexNow, which
+participating engines including Bing support. The key is intentionally public;
+it is not a private API credential. Keep the file available after submission.
+An HTTP 200 or 202 response confirms receipt, not indexing or ranking, and does
+not submit pages to Google. Search Console/Bing ownership verification and their
+reporting accounts remain separate from this notification.
 
 ## Measure useful outcomes
 
