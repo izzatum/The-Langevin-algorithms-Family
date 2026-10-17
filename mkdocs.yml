@@ -1,0 +1,72 @@
+site_name: Langevin Algorithms in PyTorch — LaFA
+site_description: Native PyTorch Langevin algorithms for Bayesian sampling and uncertainty quantification. Compare ULA, MALA, kinetic and Stein methods with reproducible tutorials.
+site_url: https://izzatum.github.io/The-Langevin-algorithms-Family/
+repo_url: https://github.com/izzatum/The-Langevin-algorithms-Family
+repo_name: izzatum/The-Langevin-algorithms-Family
+edit_uri: edit/main/docs/
+copyright: LaFA contributors · MIT-licensed source code
+theme:
+  name: material
+  custom_dir: docs/overrides
+  language: en
+  font: false
+  palette:
+    primary: indigo
+    accent: teal
+  features:
+    - navigation.sections
+    - navigation.footer
+    - content.code.copy
+    - content.action.edit
+nav:
+  - Overview: index.md
+  - Langevin algorithms explained: langevin-algorithms.md
+  - API and recording: api.md
+  - Algorithms and sources:
+      - Implementation register: research/algorithm-register.md
+      - Paper interpretation: algorithms/paper-interpretation.md
+      - Scientific references: references.md
+  - Tutorials:
+      - Tutorial guide: tutorials.md
+      - Overdamped Langevin: notebooks/01_overdamped.md
+      - Inertial and higher order: notebooks/02_inertial.md
+      - Annealing and proximal methods: notebooks/03_specialized.md
+      - Stein particles and neural networks: notebooks/04_stein_particles.md
+      - Kernel Stein discrepancy: notebooks/05_ksd.md
+      - Ensembles and inverse problems: notebooks/06_ensemble_hybrid.md
+  - Evidence and reproducibility:
+      - Validation and limitations: validation.md
+      - GPU and RunPod setup: runpod.md
+plugins:
+  - search
+hooks:
+  - scripts/docs_hooks.py
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js
+extra_css:
+  - stylesheets/site.css
+exclude_docs: |
+  plans/
+  discovery.md
+  overrides/
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/izzatum/The-Langevin-algorithms-Family
+      name: LaFA source code on GitHub
+  software:
+    name: The Langevin Algorithms Family (LaFA)
+    version: 0.1.0
+    author: Muhammad Izzatullah

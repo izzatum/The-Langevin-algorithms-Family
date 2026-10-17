@@ -1,3 +1,8 @@
+---
+title: "Optional CUDA validation with RunPod"
+description: "Prepare controlled RunPod GPU validation for LaFA, with explicit authentication, resource cleanup, budget limits and CPU versus CUDA evidence."
+---
+
 # Runpod CUDA validation
 
 The local controller prepares a source-only payload, submits **one** Serverless job,
@@ -23,7 +28,7 @@ The [REST v2 schema](https://api.runpod.io/v2/openapi.json) lists resource manag
 operations; its general `/v2/health` response does not validate a GPU job route.
 The test endpoint and template were deleted. No job was submitted, but RunPod
 reported an idle A4000 worker: **minimum 0 workers does not guarantee that setup
-avoids GPU allocation or charges**. Billing reported $0 at cleanup and may lag.
+avoids GPU allocation or charges**. Billing reported \$0 at cleanup and may lag.
 
 ## Set up an idle endpoint
 
@@ -113,7 +118,7 @@ An oversized result fails explicitly and returns a failure metadata summary.
 ## Time and budget bounds
 
 - Exactly one A4000 GPU; minimum 0 / maximum 1 worker; no network volume.
-- Endpoint setup reserves $1 in the same ledger used for job execution, because
+- Endpoint setup reserves \$1 in the same ledger used for job execution, because
   worker initialization can start without a submitted job. Setup also starts a
   detached 30-minute cleanup watchdog; its deadline includes preparation time.
 - Provider execution timeout 900 seconds; per-job absolute TTL 1200 seconds, including
@@ -126,15 +131,15 @@ An oversized result fails explicitly and returns a failure metadata summary.
 - Prepare the source payload promptly: job submission requires enough time before
   that setup deadline for the full job TTL and cleanup margin. Expired or old
   setup receipts must be cleaned up before a newly budgeted attempt.
-- Advertised Serverless AMPERE_16 flex price is $0.58/hour. The conservative configured
-  ceiling is $0.70/hour. The 20 GB ephemeral container disk is included in Serverless
+- Advertised Serverless AMPERE_16 flex price is \$0.58/hour. The conservative configured
+  ceiling is \$0.70/hour. The 20 GB ephemeral container disk is included in Serverless
   running cost; the estimate retains an additional small allowance. This is not the
   much cheaper Community Pod rate.
-- A 20-minute lifetime plus 10-minute reserve is estimated below $0.36. The persistent
-  ledger reserves that estimate **plus $1**, rounded upward (normally $1.36).
-  Setup and job reservations are separate; every reservation is at least $1,
-  cannot exceed the default $3 per-stage budget,
-  and all reservations together cannot exceed the authorized **$10 total**.
+- A 20-minute lifetime plus 10-minute reserve is estimated below \$0.36. The persistent
+  ledger reserves that estimate **plus \$1**, rounded upward (normally \$1.36).
+  Setup and job reservations are separate; every reservation is at least \$1,
+  cannot exceed the default \$3 per-stage budget,
+  and all reservations together cannot exceed the authorized **\$10 total**.
   Reservations are not automatically refunded. Keep the same ledger across runs;
   manual invoice reconciliation must account for earlier charges before editing it.
 

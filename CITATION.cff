@@ -3,9 +3,13 @@ message: "Please cite this software and the original scientific sources for the 
 title: "The Langevin Algorithms Family (LaFA)"
 type: software
 version: 0.1.0
-abstract: "PyTorch-native Langevin sampling, Stein variational inference and Bayesian uncertainty quantification, with selective recording and reproducible inverse-problem tutorials."
+abstract: "Langevin algorithms in PyTorch: unadjusted Langevin (ULA), Metropolis-adjusted Langevin (MALA), kinetic and adaptive sampling, Stein variational inference and Bayesian uncertainty quantification, with reproducible inverse-problem tutorials."
 keywords:
+  - Langevin algorithms
   - Langevin dynamics
+  - unadjusted Langevin algorithm
+  - Metropolis-adjusted Langevin algorithm
+  - Markov chain Monte Carlo
   - PyTorch
   - Bayesian inference
   - uncertainty quantification

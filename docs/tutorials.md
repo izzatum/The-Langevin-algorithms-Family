@@ -1,3 +1,8 @@
+---
+title: "Langevin sampling tutorials and Bayesian inverse problems"
+description: "Explore six reproducible PyTorch tutorials covering Langevin, Stein and ensemble methods, kernel diagnostics and nonlinear inverse problems."
+---
+
 # Executable tutorials
 
 Run `python scripts/execute_notebooks.py --device cpu` from an environment with `pip install -e '.[notebooks]'`. Each notebook starts a clean kernel using the current Python executable, prints software/device/dtype/seed information, and writes its real outputs. Results are deterministic only within a compatible hardware/software stack. Notebook defaults use float64 and one CPU thread; `LAFA_DEVICE` selects the device and `LAFA_QUICK=0` increases budgets. The runner exposes these as `--device` and `--full`.

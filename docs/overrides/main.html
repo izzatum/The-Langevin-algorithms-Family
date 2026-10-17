@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block htmltitle %}
+  {% if page and page.is_homepage %}
+    <title>Langevin Algorithms in PyTorch — LaFA</title>
+  {% elif page %}
+    <title>{{ page.meta.title or page.title }} — LaFA</title>
+  {% else %}
+    <title>{{ config.site_name }}</title>
+  {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+  {% if page and page.canonical_url %}
+    {% set title = 'Langevin Algorithms in PyTorch — LaFA' if page.is_homepage else (page.meta.title or page.title) ~ ' — LaFA' %}
+    {% set description = page.meta.description or config.site_description %}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="LaFA — The Langevin Algorithms Family">
+    <meta property="og:title" content="{{ title }}">
+    <meta property="og:description" content="{{ description }}">
+    <meta property="og:url" content="{{ page.canonical_url }}">
+    <meta property="og:image" content="{{ config.site_url }}assets/overdamped.png">
+    <meta property="og:image:alt" content="Executed Langevin sampling tutorial: samples, chain traces and adaptive step sizes">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ title }}">
+    <meta name="twitter:description" content="{{ description }}">
+    <meta name="twitter:image" content="{{ config.site_url }}assets/overdamped.png">
+    {% if page.is_homepage %}
+      {% set software = {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareSourceCode',
+        '@id': config.site_url ~ '#software',
+        'name': config.extra.software.name,
+        'alternateName': 'LaFA',
+        'description': description,
+        'url': config.site_url,
+        'codeRepository': config.repo_url,
+        'license': config.repo_url ~ '/blob/main/LICENSE',
+        'programmingLanguage': 'Python',
+        'runtimePlatform': 'PyTorch',
+        'version': config.extra.software.version,
+        'author': {'@type': 'Person', 'name': config.extra.software.author},
+        'keywords': ['Langevin algorithms', 'Bayesian sampling', 'uncertainty quantification', 'PyTorch'],
+        'citation': 'https://doi.org/10.1093/gji/ggab287'
+      } %}
+      <script type="application/ld+json">{{ software | tojson }}</script>
+    {% endif %}
+  {% endif %}
+{% endblock %}

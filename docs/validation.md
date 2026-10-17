@@ -1,3 +1,8 @@
+---
+title: "Langevin benchmarks, validation and sampling limits"
+description: "Inspect CPU tests, benchmark evidence, neural-network and nonlinear inverse examples, mixing failures, Monte Carlo uncertainty and pending GPU validation."
+---
+
 # Validation and measured limits
 
 This is an initial scientific implementation, with reviewed formulas and finite numerical checks. It does not establish universal convergence, accuracy or acceleration for arbitrary PyTorch models. The [algorithm register](research/algorithm-register.md) defines each implemented subset; all sources are in [one reference document](references.md).
@@ -78,7 +83,7 @@ Pair interactions avoid full N×N×D tensors and SVN avoids dense parameter Hess
 
 ## GPU and research gates
 
-**No real CUDA execution has been completed.** The [RunPod controller](runpod.md) prepares a source payload and runs the tests and six notebooks with explicit CUDA, saves artifacts, and applies worker/time/budget bounds. Its helper tests run locally without allocating a GPU. The authorized total budget is **$10**. No GPU job has been submitted. A management-only check observed an idle A4000 worker despite minimum 0 workers; all task resources were removed. Billing returned $0 at cleanup on 2026-10-15, but reporting may lag. Five historical endpoint setup attempts now carry $5 of conservative ledger reservations; this is reserved budget, not invoiced spend.
+**No real CUDA execution has been completed.** The [RunPod controller](runpod.md) prepares a source payload and runs the tests and six notebooks with explicit CUDA, saves artifacts, and applies worker/time/budget bounds. Its helper tests run locally without allocating a GPU. The authorized total budget is **\$10**. No GPU job has been submitted. A management-only check observed an idle A4000 worker despite minimum 0 workers; all task resources were removed. Billing returned \$0 at cleanup on 2026-10-15, but reporting may lag. Five historical endpoint setup attempts now carry \$5 of conservative ledger reservations; this is reserved budget, not invoiced spend.
 
 The secure key currently permits `rest.runpod.io` and `api.runpod.io`. The latter is a valid management API and authenticated successfully; its endpoint job health path returned 404. RunPod documents the Serverless job API at **`api.runpod.ai`**, which returned 401 and needs adding to that same binding. Authenticated management access does not validate CUDA. Keep the `.io` destinations when adding `.ai` in environment settings. CPU outputs and skipped CUDA cases are never reported as GPU results.
 

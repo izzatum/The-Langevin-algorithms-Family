@@ -1,3 +1,8 @@
+---
+title: "PyTorch Langevin sampler API and sample recording"
+description: "Use optimizer-style and batched PyTorch samplers, compiled targets, neural-network potentials, chain diagnostics and bounded sample recording in LaFA."
+---
+
 # API and recording guide
 
 Use the root `lafa` classes for optimizer-style parameter mutation, `lafa.samplers` for explicit independent chains, `lafa.particles` for interacting particles, and `lafa.specialized` for algorithms with their own inference state. The [algorithm register](research/algorithm-register.md) lists every public method and its assumptions. Class/function docstrings specify optional arguments; the [six notebooks](tutorials.md) show complete runs.

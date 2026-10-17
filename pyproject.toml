@@ -13,6 +13,7 @@ dependencies = ["torch>=2.6"]
 
 [project.urls]
 Repository = "https://github.com/izzatum/The-Langevin-algorithms-Family"
+Documentation = "https://github.com/izzatum/The-Langevin-algorithms-Family/blob/main/docs/index.md"
 
 [project.optional-dependencies]
 test = ["pytest>=8"]
