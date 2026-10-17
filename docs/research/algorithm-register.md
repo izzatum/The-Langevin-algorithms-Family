@@ -1,3 +1,8 @@
+---
+title: "Implemented Langevin and Stein algorithms"
+description: "Compare supported ULA, MALA, adaptive, kinetic, Stein, proximal and ensemble methods, their original papers and exact implementation boundaries."
+---
+
 # Implemented algorithms and scientific boundaries
 
 LaFA 0.1.0 implements the six requested families with explicit variants. The [single bibliography](../references.md) contains the original papers and source-review provenance. The [validation report](../validation.md) distinguishes numerical checks, finite-run experiments and outstanding GPU execution. Exa research remains outstanding under the approved primary-source fallback.

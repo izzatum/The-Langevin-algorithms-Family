@@ -1,0 +1,4 @@
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+nbconvert==7.17.2
+nbformat==5.11.1

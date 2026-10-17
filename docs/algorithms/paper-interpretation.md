@@ -1,3 +1,8 @@
+---
+title: "Lipschitz-adaptive Langevin: paper interpretation"
+description: "Read LaFA\u2019s mathematical conventions for Lipschitz-adaptive ULA and MALA, proposal corrections and the published Bayesian seismic inversion paper."
+---
+
 # Interpretation of the seismic Lip-Langevin paper
 
 This note records the project's mathematical interpretation of Izzatullah, van Leeuwen, and Peter (2021), [R01 in the consolidated bibliography](../references.md#r01). The user confirmed that no separate erratum or author reference implementation was available and delegated the choice of a mathematically sound interpretation. These are project decisions, not an author-issued correction or a claim to reproduce unpublished author code.

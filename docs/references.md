@@ -1,3 +1,8 @@
+---
+title: "Langevin algorithm papers and scientific references"
+description: "Find 24 scientific sources for Langevin samplers, Stein methods, filtering and diagnostics, with DOI links, algorithm mappings and review provenance."
+---
+
 # Scientific references and algorithm coverage
 
 This is the project's consolidated scientific bibliography. Reference IDs are stable: append new records rather than renumbering existing ones. A citation identifies a mathematical source; it does not establish that a particular software implementation is complete, correct, or experimentally validated. Implementation maturity and supported variants belong in the [algorithm register](research/algorithm-register.md).
