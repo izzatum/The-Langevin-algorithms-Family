@@ -1,3 +1,9 @@
 .md-typeset table:not([class]) { font-size: .72rem; }
 .md-typeset img { height: auto; }
 .md-typeset .admonition.evidence { border-color: #00796b; }
+.md-typeset span.arithmatex {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  vertical-align: middle;
+}

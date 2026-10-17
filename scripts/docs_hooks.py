@@ -16,6 +16,10 @@ from mkdocs.structure.files import File
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = 'https://github.com/izzatum/The-Langevin-algorithms-Family'
 RAW = 'https://raw.githubusercontent.com/izzatum/The-Langevin-algorithms-Family/main/'
+EVIDENCE_FIGURES = {
+    f'benchmarks/results/cpu/{name}': f'assets/evidence/{name}'
+    for name in ('samples.png', 'families_accuracy_cost.png', 'nonlinear-fields.png')
+}
 NOTEBOOKS = {
     '01_overdamped': ('Overdamped Langevin tutorial: ULA, MALA and adaptive steps',
         'Compare ULA, MALA and Lipschitz-adaptive Langevin on Gaussian and multimodal targets, with executed CPU figures and independent-chain diagnostics.'),
@@ -67,6 +71,9 @@ FIGURES = {
 
 
 def on_files(files, config):
+    # Keep the site self-contained without moving the authoritative evidence.
+    for source, destination in EVIDENCE_FIGURES.items():
+        files.append(File.generated(config, destination, abs_src_path=str(ROOT / source)))
     exporter = MarkdownExporter()
     exporter.exclude_input_prompt = True
     exporter.exclude_output_prompt = True
@@ -140,6 +147,9 @@ def on_page_markdown(markdown, page, config, files):
         repository_path = resolved[3:]
         if not (ROOT / repository_path).is_file():
             raise ValueError(f'{page.file.src_uri}: missing source link {destination}')
+        if start.startswith('!') and repository_path in EVIDENCE_FIGURES:
+            relative = posixpath.relpath(EVIDENCE_FIGURES[repository_path], str(source_dir))
+            return start + urlunsplit(('', '', relative, url.query, url.fragment)) + end
         base = RAW if start.startswith('!') else REPOSITORY + '/blob/main/'
         return start + base + urlunsplit(('', '', repository_path, url.query, url.fragment)) + end
 
