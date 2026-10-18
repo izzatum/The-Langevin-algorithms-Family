@@ -4,7 +4,7 @@ site_url: https://izzatum.github.io/The-Langevin-algorithms-Family/
 repo_url: https://github.com/izzatum/The-Langevin-algorithms-Family
 repo_name: izzatum/The-Langevin-algorithms-Family
 edit_uri: edit/main/docs/
-copyright: LaFA contributors · MIT-licensed source code
+copyright: 'LaFA contributors · MIT-licensed source code · <a href="https://izzatullah.com/lab/">Muhammad Izzatullah · izzatullah.com</a>'
 theme:
   name: material
   custom_dir: docs/overrides
