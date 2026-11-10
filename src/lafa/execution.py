@@ -39,8 +39,15 @@ def compile_potential(potential, *, backend='inductor', mode=None, fullgraph=Tru
     Values must have shape ``x.shape[:-1]`` and chains must be independent, just
     as for eager targets. Keep shapes/dtype/device fixed to avoid recompilation.
     Use deterministic, mutation-free tensor operations supported by torch.func
-    and torch.compile. Score targets and custom value_and_grad implementations
-    are unsupported. No RNG is compiled. Errors never silently fall back.
+    and torch.compile. Which Python constructs ``fullgraph`` accepts depends on
+    the installed PyTorch, and an accepted construct is not guaranteed to match
+    the eager potential: ``.item()`` detaches in both, but Python arithmetic on
+    such scalars, their reuse as tensor arguments, ``x.requires_grad`` checks
+    and inductor's floor division have each silently differed on some releases.
+    Prefer tensor operations (``.detach()``) and compare against the eager
+    potential when in doubt. Score targets and custom value_and_grad
+    implementations are unsupported. No RNG is compiled. Errors never silently
+    fall back.
     ``backend='aot_eager'`` is useful to validate compatibility without codegen.
     Default finite/shape/dtype/device validation still occurs in the sampler.
     """
