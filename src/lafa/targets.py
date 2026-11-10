@@ -1,4 +1,6 @@
 """Potential convention U=-log(pi). Batched targets must separate chains."""
+import math
+import numbers
 from dataclasses import dataclass
 from typing import Callable
 import torch
@@ -57,9 +59,21 @@ def from_score(score: Callable[[Tensor], Tensor]) -> ScoreTarget:
     return ScoreTarget(score)
 
 
-def positive_transform(potential: Potential) -> Potential:
-    """Pull back a density on positive coordinates via z=exp(x), including Jacobian."""
-    return lambda x: potential(x.exp()) - x.sum(-1)
+def positive_transform(potential: Potential, *, temperature=1.) -> Potential:
+    """Pull back a density on positive coordinates via z=exp(x), including Jacobian.
+
+    Samplers target exp(-U/T). Pass the same temperature the sampler uses: the
+    log-Jacobian is scaled by it, so it enters the sampled density untempered
+    and z=exp(x) follows exp(-potential(z)/T) on z>0.
+    """
+    real = isinstance(temperature, numbers.Real) and not isinstance(temperature, bool)
+    try:
+        temperature = float(temperature) if real else math.nan
+    except OverflowError:
+        temperature = math.inf
+    if not math.isfinite(temperature) or temperature <= 0:
+        raise ValueError('temperature must be a positive finite real number')
+    return lambda x: potential(x.exp()) - temperature*x.sum(-1)
 
 
 @dataclass(frozen=True)
@@ -95,6 +109,7 @@ class ModulePotential:
     differentiable calls retain their graphs until the caller releases them.
     Same-object tied parameters retain their tie. Distinct parameters sharing
     storage are rejected because an unconstrained flat vector loses that alias.
+    Zero-size parameters own no coordinates and are exempt from that check.
     """
     def __init__(self, module, loss, *, args=(), kwargs=None, batch_mode='vmap', chunk_size=None):
         if batch_mode not in ('vmap', 'loop'):
@@ -108,12 +123,15 @@ class ModulePotential:
         seen_storage = set()
         # named_parameters removes duplicate objects, preserving ordinary tied
         # weights. Distinct objects backed by one storage need an unsupported
-        # constraint and cannot become independent flat coordinates.
+        # constraint and cannot become independent flat coordinates. Zero-size
+        # parameters have no elements to alias; empty storages all report the
+        # same null data pointer, so they are not compared.
         for name, p in module.named_parameters():
-            storage = (p.device, p.untyped_storage().data_ptr())
-            if storage in seen_storage:
-                raise ValueError('distinct module parameters with aliased parameter storage are unsupported')
-            seen_storage.add(storage)
+            if p.numel():
+                storage = (p.device, p.untyped_storage().data_ptr())
+                if storage in seen_storage:
+                    raise ValueError('distinct module parameters with aliased parameter storage are unsupported')
+                seen_storage.add(storage)
             self.parameter_spec.append(ParameterSpec(name, p.shape, offset, offset+p.numel()))
             offset += p.numel()
         if not offset:
