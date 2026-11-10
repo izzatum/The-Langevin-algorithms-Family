@@ -4,7 +4,7 @@ import torch
 from lafa.targets import value_and_grad, _validate_chunk_size, _transform_error
 from lafa.state import StepResult
 from lafa.kernels import RBF, validate_ensemble, validate_block_size
-from .svgd import SVGD, direction, kde_direction, _validate_score
+from .svgd import SVGD, direction, kde_direction, _validate_score, _identity
 class FunctionSpaceSVGD(SVGD):
     """Wang et al. (2019) Eq.(3)/(4), finite function-space destination VJP.
 
@@ -22,6 +22,10 @@ class FunctionSpaceSVGD(SVGD):
     ``chunk_size`` bounds the number of particles transformed at once. The map
     must support torch.func transforms and must not mutate captured state.
     Unsupported vmap operations require the explicit default loop mode.
+
+    Outputs and function-space gradients of the accepted candidate are retained
+    with its evaluation, so a step costs one output pass and two VJP sweeps. Call
+    invalidate_cache() after changing function map or target data in place.
     """
     def __init__(self,function_map,function_potential,initial,*,vectorized=False,chunk_size=None,**kwargs):
         if not isinstance(vectorized, bool): raise ValueError('vectorized must be a boolean')
@@ -69,17 +73,30 @@ class FunctionSpaceSVGD(SVGD):
         _validate_score(x,result)
         return result
 
-    def _evaluate(self,x):
+    def _record(self,x):
+        # Extras: outputs and function-space gradient, so _direction needs no second pass.
         z = self._outputs(x)
-        values,gradient = self._batched_value_and_grad(self.function_potential,z)
+        values,grad_z = self._batched_value_and_grad(self.function_potential,z)
         if not getattr(self.function_potential,'score_only',False) and not torch.isfinite(values).all():
             raise ValueError('nonfinite function potential values')
-        _validate_score(z,gradient)
-        return values,self._pullback(x,gradient)
+        _validate_score(z,grad_z)
+        return values,self._pullback(x,grad_z),z,grad_z
+
+    def _evaluate(self,x):
+        return self._record(x)[:2]
+
+    def _cache_key(self,x):
+        return _identity(x)+(self.function_map,self.function_potential,self.vectorized,self.chunk_size,self.block_size)
+
+    def _function_state(self,x):
+        """Outputs and function-space gradient at x, retained ones when they are for x."""
+        record = self._retained(x)
+        if record is not None: return record[2],record[3]
+        z = self._outputs(x)
+        return z,self._batched_value_and_grad(self.function_potential,z)[1]
 
     def _direction(self,x,gradient):
-        z = self._outputs(x)
-        _,grad_z = self._batched_value_and_grad(self.function_potential,z)
+        z,grad_z = self._function_state(x)
         phi = direction(z,-grad_z,kernel=self.kernel,weights=self.weights,block_size=self.block_size)
         return self._pullback(x,phi),{'function_direction_norm':phi.norm()}
 
