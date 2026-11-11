@@ -32,8 +32,7 @@ class FunctionSpaceRepulsiveEnsemble(FunctionSpaceSVGD):
         if not isinstance(self.kernel,RBF): raise ValueError('KDE-fWGD requires RBF')
 
     def _direction(self,x,gradient):
-        z=self._outputs(x)
-        _,grad_z=self._batched_value_and_grad(self.function_potential,z)
+        z,grad_z=self._function_state(x)
         field=kde_direction(z,-grad_z,kernel=self.kernel,weights=self.weights,block_size=self.block_size)
         return self._pullback(x,field),{'function_direction_norm':field.norm()}
 

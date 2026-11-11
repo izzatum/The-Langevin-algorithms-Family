@@ -172,7 +172,7 @@ def test_annealing_conventions_and_stage_completion(device):
     a=AnnealedLangevin(gaussian,x,[2.,1.],.1,steps_per_temperature=1)
     torch.testing.assert_close(a.step(noise=z).position,.9*x+math.sqrt(.4)*z)
     a.step(noise=z)
-    with pytest.raises(StopIteration):a.step()
+    with pytest.raises(RuntimeError,match='temperature schedule complete'):a.step()
     b=NoiseAnnealedLangevin(lambda x,s:-x/s**2,x,[2.,1.],.1,steps_per_sigma=1)
     torch.testing.assert_close(b.step(noise=z).position,x-.4/2*x/4+math.sqrt(.4)*z)
     assert b.stage==1

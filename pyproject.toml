@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lafa"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Native PyTorch Langevin algorithms and uncertainty quantification"
 readme = "README.md"
 license = "MIT"
@@ -21,6 +21,10 @@ notebooks = ["jupyter>=1", "nbclient>=0.10", "nbformat>=5.10", "ipykernel>=6", "
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+# Read statically from src/lafa/__init__.py (a plain string literal), so builds never import torch.
+[tool.setuptools.dynamic]
+version = {attr = "lafa.__version__"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

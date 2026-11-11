@@ -115,8 +115,8 @@ def test_filter_counts_and_kalman_comparison_are_sequential():
     assert work['gradient_batches']==4
     assert work['gradient_points']==12
     assert work['conditional_prior_analytic_gradient_points']==12
-    assert work['transition_batches']==1+4*(3+1)
-    assert work['transition_points']==3+4*(3*6+3)
+    assert work['transition_batches']==1+4*(1+1)
+    assert work['transition_points']==3+4*(6+3)
     assert row['metrics']['means'].shape==(2,1)
     assert row['objective']=='sequential_filtering'
     assert not row['diagnostics']['applicable']

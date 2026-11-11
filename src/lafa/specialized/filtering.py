@@ -6,15 +6,22 @@ from ..targets import value_and_grad, validate_position
 from ._common import OwnedState, checked, positive, noise_like
 
 
-def _matrix(value,like,shape,name,*,spd=False):
+def _factor(value,like,shape,name):
+    """Lower Cholesky factor from the symmetric positive definite check."""
     checked(value,like,name,shape)
+    if not torch.allclose(value,value.T,rtol=1e-5,atol=1e-7):
+        raise ValueError(f'{name} must be symmetric')
+    try:
+        return torch.linalg.cholesky(value)
+    except RuntimeError as exc:
+        raise ValueError(f'{name} must be positive definite') from exc
+
+
+def _matrix(value,like,shape,name,*,spd=False):
     if spd:
-        if not torch.allclose(value,value.T,rtol=1e-5,atol=1e-7):
-            raise ValueError(f'{name} must be symmetric')
-        try:
-            torch.linalg.cholesky(value)
-        except RuntimeError as exc:
-            raise ValueError(f'{name} must be positive definite') from exc
+        _factor(value,like,shape,name)
+    else:
+        checked(value,like,name,shape)
     return value
 
 
@@ -67,7 +74,11 @@ class SALEnKF(OwnedState):
 
     step(observation) completes one stage with inner_steps, retaining ALL m times
     (inner_steps-burnin) post-burnin samples for backward resampling next stage.
-    Memory is bounded in number of stages, not in inner_steps. Checkpoints are
+    Memory is bounded in number of stages, not in inner_steps. After the first
+    stage each inner step transitions the retained pool once, shares those
+    means (pool by d, the order of the pool itself) and one process Cholesky
+    factor across all m backward draws, then transitions the m drawn ancestors;
+    gamma>0 adds one more ancestor transition for the score. Checkpoints are
     between stages only. epsilon and gamma are constants or callables(stage,k)
     with one-based indices. gamma=0 gives known-parameter filtering. No SA at t=1.
     Finite pools and short inner loops are approximations. Uses negative prior
@@ -80,7 +91,7 @@ class SALEnKF(OwnedState):
         validate_position(theta)
         if initial_particles.ndim!=2 or theta.ndim!=1 or theta.device!=initial_particles.device or theta.dtype!=initial_particles.dtype:
             raise ValueError('initial_particles (m,d) and theta (p,) must share dtype/device')
-        if not isinstance(inner_steps,int) or not isinstance(burnin,int) or not 0<=burnin<inner_steps:
+        if any(isinstance(value,bool) or not isinstance(value,int) for value in (inner_steps,burnin)) or not 0<=burnin<inner_steps:
             raise ValueError('require integer 0 <= burnin < inner_steps')
         self._theta=theta.detach().clone()
         self.transition=transition
@@ -125,14 +136,15 @@ class SALEnKF(OwnedState):
         return value.clone() if isinstance(value,torch.Tensor) else value
 
     def _operators(self,theta,observation):
+        """Validated C,H,V and the Cholesky factor from the SPD check of C."""
         d=self._position.shape[1]; p=observation.numel()
         C=self._operator(self.process_covariance,theta)
         H=self._operator(self.observation_matrix,theta)
         V=self._operator(self.observation_covariance,theta)
-        _matrix(C,theta,(d,d),'process covariance',spd=True)
+        factor=_factor(C,theta,(d,d),'process covariance')
         _matrix(H,theta,(p,d),'linear observation matrix')
         _matrix(V,theta,(p,p),'observation covariance',spd=True)
-        return C,H,V
+        return C,H,V,factor
 
     def predictive_score(self,observation,ancestors,theta=None):
         """Mean parameter log-predictive score, including covariance logdet.
@@ -144,7 +156,7 @@ class SALEnKF(OwnedState):
         base=self._theta if theta is None else theta
         with torch.enable_grad():
             t=base.detach().clone().requires_grad_()
-            C,H,V=self._operators(t,observation)
+            C,H,V,_=self._operators(t,observation)
             means=self.transition(ancestors.detach().clone(),t.clone())
             checked(means,ancestors,'transition means')
             S=H@C@H.T+V
@@ -153,32 +165,57 @@ class SALEnKF(OwnedState):
             gradient=torch.autograd.grad(terms.mean(),t,allow_unused=True)[0] if terms.requires_grad else None
         return torch.zeros_like(base) if gradient is None else checked(-gradient,base,'predictive score')
 
+    def _pool_means(self,pool,theta,block_size=128):
+        """Yield owned transition means of successive pool blocks at theta."""
+        for start in range(0,len(pool),block_size):
+            block=pool[start:start+block_size]
+            yield checked(self.transition(block.clone(),theta.clone()),block,'transition means')
+
+    @staticmethod
+    def _backward(particles,blocks,factor,size):
+        """Backward probabilities from pool mean blocks and a process factor.
+
+        blocks iterates (b,d) transition means covering size pool states in
+        order. One row and one block at a time: subtract, whiten, accumulate.
+        """
+        logits=particles.new_empty((len(particles),size))
+        start=0
+        for means in blocks:
+            for index,row in enumerate(particles):
+                residual=means-row
+                whitened=torch.linalg.solve_triangular(factor,residual.T,upper=False)
+                logits[index,start:start+len(means)]=-.5*whitened.square().sum(0)
+            start+=len(means)
+        return logits.softmax(-1)
+
+    def _ancestor_indices(self,x,theta,factor):
+        """One backward draw per current row, in order, from shared pool means.
+
+        theta is fixed within an inner step, so one pool transition (pool by d
+        means, released on return) and one process factor serve every row.
+        """
+        means=list(self._pool_means(self._pool,theta))
+        size=len(self._pool)
+        return torch.cat([torch.multinomial(self._backward(row,means,factor,size)[0],1,generator=self.generator) for row in x.split(1)])
+
     def backward_probabilities(self,particles,pool,theta=None,*,block_size=128):
         """Finite-pool Gaussian backward probabilities, rows sum to one.
 
         Subtract states before whitening to preserve small residuals at large
-        common offsets. Row-wise, blocked residuals use O(block_size*d) working
+        common offsets. Each pool block is transitioned once for all rows and
+        then released; row-wise, blocked residuals use O(block_size*d) working
         storage in addition to the returned m by pool probability matrix;
         no m by pool by d array or expanded squared-distance identity is used.
-        step requests one current row at a time.
+        step instead holds the pool means of one inner step (pool by d, the
+        order of the retained pool) and draws one current row at a time.
         """
         if not isinstance(block_size,int) or block_size<1:
             raise ValueError('block_size must be a positive integer')
         t=self._theta if theta is None else theta
         with torch.no_grad():
-            C=self._operator(self.process_covariance,t)
-            _matrix(C,t,(particles.shape[1],particles.shape[1]),'process covariance',spd=True)
-            L=torch.linalg.cholesky(C)
-            logits=particles.new_empty((len(particles),len(pool)))
-            for start in range(0,len(pool),block_size):
-                block=pool[start:start+block_size]
-                means=self.transition(block.clone(),t.clone())
-                checked(means,block,'transition means')
-                for index,row in enumerate(particles):
-                    residual=means-row
-                    whitened=torch.linalg.solve_triangular(L,residual.T,upper=False)
-                    logits[index,start:start+len(block)]=-.5*whitened.square().sum(0)
-            return logits.softmax(-1)
+            d=particles.shape[1]
+            factor=_factor(self._operator(self.process_covariance,t),t,(d,d),'process covariance')
+            return self._backward(particles,self._pool_means(pool,t,block_size),factor,len(pool))
 
     def step(self,observation):
         if not isinstance(observation,torch.Tensor) or observation.ndim!=1:
@@ -190,22 +227,18 @@ class SALEnKF(OwnedState):
         ancestors_indices=None
         if t>1:
             with torch.no_grad():
-                C,_,_=self._operators(theta,observation)
+                _,_,_,factor=self._operators(theta,observation)
                 # x is already a private forecast buffer and is consumed here.
                 means=self.transition(x,theta.clone())
                 checked(means,x,'transition means')
-                x=means+noise_like(x,self.generator)@torch.linalg.cholesky(C).T
+                x=means+noise_like(x,self.generator)@factor.T
         for k in range(1,self.inner_steps+1):
             epsilon=self._rate(self.epsilon,t,k,positive_only=True)
             gamma=self._rate(self.gamma,t,k,positive_only=False)
             with torch.no_grad():
-                C,H,V=self._operators(theta,observation)
+                C,H,V,factor=self._operators(theta,observation)
                 if t>1:
-                    indices=[]
-                    for row in x.split(1):
-                        probs=self.backward_probabilities(row,self._pool,theta)[0]
-                        indices.append(torch.multinomial(probs,1,generator=self.generator))
-                    ancestors_indices=torch.cat(indices)
+                    ancestors_indices=self._ancestor_indices(x,theta,factor)
                     ancestors=self._pool[ancestors_indices].detach()
                     # Retain the untransformed ancestors for predictive_score.
                     means=self.transition(ancestors.clone(),theta.clone())

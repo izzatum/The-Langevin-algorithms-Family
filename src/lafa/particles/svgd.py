@@ -16,6 +16,12 @@ def _validate_score(x, score):
         raise ValueError('score must be finite and match particle shape, dtype and device')
 
 
+def _identity(x):
+    # This very tensor, its in-place version (inference tensors track none) and
+    # the ambient inference mode, inside which autograd targets lose gradients.
+    return (x,None if x.is_inference() else x._version,torch.is_inference_mode_enabled())
+
+
 @torch.no_grad()
 def direction(position, score, *, kernel=None, weights=None, block_size=128):
     """Liu--Wang Eq.(8): weighted source scores plus SOURCE kernel derivatives."""
@@ -90,7 +96,17 @@ class SVGD:
     batches. Targets must not couple rows or change with batch composition.
     state_dict contains configuration and tensors, never the
     target closure. Restore into a constructed object with the target reattached.
+
+    The evaluation of each accepted candidate is retained and reused by the next
+    step instead of evaluating the same particles again; a target that is not
+    deterministic is therefore drawn once per step. The retained evaluation is
+    tied to that position tensor and to the target object, is dropped by
+    load_state_dict and is never serialized. Call invalidate_cache() after
+    changing target data/parameters in place; it also releases a replaced
+    target, which otherwise stays referenced until the next step.
     """
+    _cache = None  # (key, evaluation) of the current position.
+
     def __init__(self,potential,initial,*,step_size=.01,kernel=None,weights=None,block_size=128):
         validate_ensemble(initial)
         if not math.isfinite(step_size) or step_size <= 0: raise ValueError('step_size must be positive and finite')
@@ -124,21 +140,53 @@ class SVGD:
     def _evaluate(self,x):
         return self._batched_value_and_grad(self.potential,x)
 
+    def _record(self,x):
+        """Everything retained for x: (values, gradient, *method extras)."""
+        return self._evaluate(x)
+
+    def _cache_key(self,x):
+        # Whatever an evaluation of x reads; identity alone never proves equal content.
+        return _identity(x)+(self.potential,self.block_size)
+
+    def _retained(self,x):
+        """Retained record of exactly this unmodified tensor and target, else None."""
+        if self._cache is None: return None
+        key,record = self._cache
+        fresh = all(a is b or (type(a) is int and a == b) for a,b in zip(key,self._cache_key(x)))
+        return record if fresh else None
+
+    def invalidate_cache(self):
+        """Drop the retained evaluation; the next step evaluates the current position.
+
+        Call after changing target data/parameters in place. Nothing is evaluated here.
+        """
+        self._cache = None
+
+    def __getstate__(self):
+        # Copies and pickles carry no retained evaluation either.
+        return {k:v for k,v in self.__dict__.items() if k != '_cache'}
+
     def _direction(self,x,gradient):
         return direction(x,-gradient,kernel=self.kernel,weights=self.weights,block_size=self.block_size),{}
 
     def step(self):
         x = self._position
-        _,gradient = self._evaluate(x)
-        field,stats = self._direction(x,gradient)
+        record = self._retained(x)
+        if record is None:
+            key = self._cache_key(x)
+            record = self._record(x)
+            self._cache = key,record
+        field,stats = self._direction(x,record[1])
         candidate = (x+self.step_size*field).detach()
         validate_ensemble(candidate)
-        values,gradient = self._evaluate(candidate)
-        self._position = candidate
+        key = self._cache_key(candidate)
+        record = self._record(candidate)
+        # A raise above leaves the position and its retained evaluation untouched.
+        self._position,self._cache = candidate,(key,record)
         self.iteration += 1
         stats = {k:v.detach().clone() for k,v in stats.items()}
         stats['iteration'] = candidate.new_tensor(self.iteration,dtype=torch.int64)
-        return StepResult(candidate.clone(),values.clone(),gradient.clone(),stats=stats)
+        return StepResult(candidate.clone(),record[0].clone(),record[1].clone(),stats=stats)
 
     def state_dict(self):
         return {'version':1,'method':type(self).__name__,'position':self.position,
@@ -167,6 +215,7 @@ class SVGD:
         self._load_extra(state['extra'],x)
         self._position,self.iteration,self.step_size,self.block_size = x,state['iteration'],step,state['block_size']
         self.kernel,self.weights = kernel,w
+        self._cache = None  # A restored position owns no evaluation.
         return self
 
     def _load_extra(self,extra,x):

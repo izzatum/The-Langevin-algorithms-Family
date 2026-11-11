@@ -179,10 +179,16 @@ class _Lip:
     max_step_size (finite default 1) safeguards constant-gradient targets. A
     rejection/repeated state leaves h and its ratio history unchanged. alpha starts
     at infinity (the paper initialization), then equals the latest h/previous h. Each chain adapts separately.
+
+    adapt_steps is None (never freeze) or a nonnegative int, not a bool: transitions
+    1..adapt_steps each end by adapting h, later ones leave it unchanged, and 0 keeps
+    the initial h. The 'adapting' statistic of a step is True exactly when the next
+    transition will still adapt, i.e. while next_step_size can still change. With
+    adapt_steps=2 it reads True, False, False and h is frozen from the end of step 2.
     """
     def __init__(self, *args, lc=None, max_step_size=1., adapt_steps=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if adapt_steps is not None and (not isinstance(adapt_steps,int) or adapt_steps < 0):
+        if adapt_steps is not None and (isinstance(adapt_steps,bool) or not isinstance(adapt_steps,int) or adapt_steps < 0):
             raise ValueError('adapt_steps must be a nonnegative integer or None')
         self.adapt_steps = adapt_steps
         self.lc = self._position.shape[-1]**(-1/3) if lc is None else float(lc)
@@ -204,6 +210,7 @@ class _Lip:
             self._alpha = torch.where(moved, self.step_size/old_h, self._alpha)
         if collect_stats:
             stats['next_step_size'] = self.step_size
+            # iteration already counts this transition: True iff the next one adapts.
             stats['adapting'] = torch.tensor(self.adapt_steps is None or self.iteration < self.adapt_steps, device=self._position.device)
         return accepted, stats
 

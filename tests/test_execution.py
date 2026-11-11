@@ -255,12 +255,101 @@ def test_optimizer_pending_checkpoint_survives_failed_first_step(name):
 def test_compilation_failure_is_explicit_without_silent_fallback():
     from lafa.execution import compile_potential
     def unsupported(x):
-        # Python scalar conversion is deliberately excluded from fullgraph.
-        return x.square().sum(-1) + x.sum().item()
+        # Data-dependent Python branching cannot be one graph on any supported PyTorch.
+        if x.sum() > 0:
+            return x.square().sum(-1)
+        return x.square().sum(-1)/2
     sampler_initial=torch.ones(2,dtype=torch.float64)
     with pytest.raises(RuntimeError, match='compiled potential/gradient evaluation failed') as error:
         samplers.ULA(compile_potential(unsupported,backend='aot_eager'), sampler_initial)
     assert error.value.__cause__ is not None
+
+
+@pytest.fixture
+def fresh_compile_cache():
+    # Dynamo keeps at most eight graphs for the shared evaluation code and never evicts dead potentials.
+    torch.compiler.reset()
+    yield
+    torch.compiler.reset()
+
+
+def test_compiled_scalar_conversion_fails_explicitly_or_matches_eager(fresh_compile_cache):
+    from lafa.execution import compile_potential
+    from lafa.targets import value_and_grad
+    def scalar_conversion(x):
+        # Whether fullgraph accepts .item() depends on the PyTorch version; it detaches in eager mode too.
+        return x.square().sum(-1) + x.sum().item()
+    def detached(x):
+        # The tensor spelling of the same potential compiles on every supported PyTorch.
+        return x.square().sum(-1) + x.sum().detach()
+    compiled=compile_potential(scalar_conversion,backend='aot_eager')
+    compiled_detached=compile_potential(detached,backend='aot_eager')
+    # One compiled object at distinct inputs: a scalar baked in while tracing would differ from eager.
+    # The last input is exact in float64 but not in float32, so a single-precision round trip shows.
+    for position in ([1.,1.],[2.,3.],[-.5,1.25],[1+2**-24,2.]):
+        position=torch.tensor(position,dtype=torch.float64)
+        expected=value_and_grad(scalar_conversion,position)
+        assert torch.equal(expected[1],2*position)
+        # Exactly representable inputs: an accepted graph must reproduce eager without tolerance.
+        for left,right in zip(value_and_grad(compiled_detached,position),expected):
+            torch.testing.assert_close(left,right,rtol=0,atol=0)
+        try:
+            actual=value_and_grad(compiled,position)
+        except RuntimeError as error:
+            assert 'compiled potential/gradient evaluation failed' in str(error)
+            assert error.__cause__ is not None
+            continue
+        for left,right in zip(actual,expected):
+            torch.testing.assert_close(left,right,rtol=0,atol=0)
+
+
+def test_compilation_failure_is_explicit_on_every_call():
+    from lafa.execution import compile_potential
+    from lafa.targets import value_and_grad
+    def unsupported(x):
+        if x.sum() > 0:
+            return x.square().sum(-1)
+        return x.square().sum(-1)/2
+    compiled=compile_potential(unsupported,backend='aot_eager')
+    # A retry, on either side of the branch, must not quietly evaluate the eager potential.
+    for position in ([1.,1.],[1.,1.],[-2.,-3.]):
+        with pytest.raises(RuntimeError, match='compiled potential/gradient evaluation failed') as error:
+            value_and_grad(compiled,torch.tensor(position,dtype=torch.float64))
+        assert error.value.__cause__ is not None
+
+
+def test_accepted_constructs_that_differ_from_eager_are_documented(fresh_compile_cache):
+    from lafa.execution import compile_potential
+    from lafa.targets import value_and_grad
+    def binned(x):
+        # Python floor division of an .item() scalar: 1.0//0.1 is 9.0.
+        return x.square().sum(-1)*(x.sum().item()//.1)
+    def cancelling(x):
+        # Python float arithmetic on an .item() scalar: 1.0+1e17-1e17 is 0.0.
+        return x.square().sum(-1)+(x.sum().item()+1e17-1e17)
+    def grad_aware(x):
+        # The eager input is a leaf that requires grad.
+        return x.square().sum(-1)*(2. if x.requires_grad else 1.)
+    position=torch.tensor([.5,.5],dtype=torch.float64)
+    differing=[]
+    for potential,value,gradient in ((binned,4.5,[9.,9.]),(cancelling,.5,[1.,1.]),(grad_aware,1.,[2.,2.])):
+        expected=value_and_grad(potential,position)
+        assert expected[0].item()==value and expected[1].tolist()==gradient
+        try:
+            actual=value_and_grad(compile_potential(potential,backend='aot_eager'),position)
+        except RuntimeError as error:
+            assert 'compiled potential/gradient evaluation failed' in str(error)
+            assert error.__cause__ is not None
+            continue
+        for left,right in zip(actual,expected):
+            assert left.shape==right.shape and left.dtype==right.dtype and left.isfinite().all()
+        if not all(torch.equal(left,right) for left,right in zip(actual,expected)):
+            differing.append(potential.__name__)
+    # No runtime check compares compiled against eager, so whatever the installed PyTorch accepts
+    # and evaluates differently must be a documented limitation, never a promised equivalence.
+    if differing and compile_potential.__doc__:
+        documentation=' '.join(compile_potential.__doc__.split())
+        assert 'not guaranteed to match the eager potential' in documentation, differing
 
 
 def test_compiled_constant_target_and_no_grad():

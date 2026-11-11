@@ -1,3 +1,4 @@
 include benchmarks/*.py
 include scripts/*.py
+include tests/conftest.py
 recursive-include tests/data *.json *.py
