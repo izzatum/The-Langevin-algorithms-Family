@@ -9,7 +9,7 @@ Use the root `lafa` classes for optimizer-style parameter mutation, `lafa.sample
 
 ## Targets and devices
 
-`potential(x)` returns `U=-log π`, with shape `x.shape[:-1]`. `from_log_prob` negates log density; `from_score` adapts a score for gradient-only methods, while MALA requires potential values. `ModulePotential` uses `torch.func.functional_call` to evaluate a flattened model state with explicit parameter ordering. `positive_transform` includes the change-of-variables Jacobian. The prior and likelihood must use the same convention; averaging a likelihood over a changing minibatch changes the target.
+`potential(x)` returns `U=-log π`, with shape `x.shape[:-1]`. `from_log_prob` negates log density; `from_score` adapts a score for gradient-only methods, while MALA requires potential values. `ModulePotential` uses `torch.func.functional_call` to evaluate a flattened model state with explicit parameter ordering. `positive_transform(potential, temperature=T)` includes the change-of-variables Jacobian; pass the same `temperature` the sampler uses (default 1) so that the Jacobian term enters the sampled density `exp(-U/T)` untempered. The prior and likelihood must use the same convention; averaging a likelihood over a changing minibatch changes the target.
 
 Construct the target, initial state, callback data and `torch.Generator(device=...)` on the same device. Float64 is useful for references; float32 performance and accuracy are workload dependent. Native and specialized sampler checkpoint loaders require matching shape, dtype and device. Particle loaders convert stored coordinates/weights to the receiving object's device/dtype; such conversion is not bitwise continuation. Exact continuation requires the same device/software and deterministic target, including any external model buffers/RNG.
 
@@ -34,9 +34,9 @@ Selected fields return an owned dictionary. Available names are `position`,
 `potential`, `gradient`, `accepted`, and `stats`; requesting no fields changes
 output allocation, not numerical validation or the transition. `advance` also
 updates adaptive histories and kinetic momentum. Optimizer `step()` return
-conventions remain unchanged. Optimizer exceptions restore parameters, gradients,
-internal sampler state and owned RNG; native sampler errors retain their existing
-RNG-consumption behavior.
+conventions remain unchanged. Optimizer exceptions and interrupts, including
+`KeyboardInterrupt`, restore parameters, gradients, internal sampler state and
+owned RNG; native sampler errors retain their existing RNG-consumption behavior.
 
 For compatible pure tensor potentials, `lafa.execution.compile_potential` compiles
 the target and its gradient together:
@@ -54,8 +54,46 @@ chain.advance(100)
 Randomness, state validation, acceptance orchestration and output selection remain
 outside that compiled region. First-call compilation is separate from warmed
 timings. Score-only and custom `value_and_grad` targets require their supported
-eager path; compilation failures are explicit. See the measured end-to-end
-benchmarks before choosing compilation for a workload.
+eager path; compilation failures are explicit. Which Python constructs compile
+depends on the installed PyTorch, and an accepted construct such as arithmetic on
+an `.item()` scalar is not guaranteed to match the eager potential: prefer tensor
+operations and compare against the eager target when in doubt. See the measured
+end-to-end benchmarks before choosing compilation for a workload.
+
+## Reused evaluations and schedule completion
+
+Several drivers keep the potential and gradient of the current state instead of
+evaluating it again at the start of the next step. Reuse assumes a deterministic
+target that changes only through the sampled state; call `invalidate_cache()`
+after changing data, buffers or other parameters the target reads in place.
+
+- Optimizer adapters `lafa.MALA`, `lafa.LipULA`, `lafa.LipMALA` and `lafa.BAOAB`
+  call the closure once per step when the same closure object is passed again and
+  the parameters are bit-identical to the state the previous step left. A new
+  closure object, or an external parameter edit, re-evaluates the current state.
+- `SVGD`, `SteinVariationalNewton`, `RepulsiveEnsemble` and the function-space
+  particle methods retain the evaluation of the accepted candidate.
+- `ReplicaExchange` carries the potential and gradient across local moves and
+  swaps. A carried row was evaluated at another batch position, so agreement with
+  a re-evaluating run or a checkpoint resume is bit-exact only when a row's value
+  does not depend on its batch position, and holds to rounding otherwise.
+
+Retained evaluations are never serialized: `load_state_dict` drops them and the
+next step evaluates the restored state.
+
+Changing `lr` on `lafa.LipULA` or `lafa.LipMALA` multiplies the adapted step by
+the ratio of the new to the old group-0 `lr`, clamped at `max_step_size`; ratios
+between parameter groups are always honoured. Fixed-step adapters reset their
+step to `lr`.
+
+`AnnealedLangevin` and `NoiseAnnealedLangevin` expose `finished` and raise
+`lafa.specialized.ScheduleComplete`, a `RuntimeError`, when stepped past their
+last stage:
+
+```python
+while not sampler.finished:
+    sampler.step()
+```
 
 ## Batched neural-network targets
 
